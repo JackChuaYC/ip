@@ -26,6 +26,7 @@ public class Yawned {
             }
             printBreakLine();
         }
+        System.out.println("Bye.. I am going back to sleep.");
         printBreakLine();
     }
 
@@ -39,8 +40,8 @@ public class Yawned {
     /**
      * Gets input from user.
      *
-     * @param Scanner scanner object to get input.
-     * @param String message output message to user.
+     * @param scanner object to get input.
+     * @param message output message to user.
      * @return string object.
      */
     private static String getUserInput(Scanner scanner, String message) {
@@ -49,6 +50,13 @@ public class Yawned {
         return scanner.nextLine();
     }
 
+    /**
+     * Adds a task to the list of tasks
+     * @param listOfTask task list
+     * @param task new task to be added
+     * @param taskCounter current task counter
+     * @return new task count (+1)
+     */
     private static int addTask(String[] listOfTasks, String task,int taskCounter) {
         listOfTasks[taskCounter] = task;
         return ++taskCounter;
