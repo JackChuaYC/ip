@@ -1,12 +1,12 @@
+import java.util.Scanner;
+
 /**
  * Entry point for the Yawned chatbot application.
  */
-import java.util.Scanner;
-
 public class Yawned {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String[] listOfTasks = new String[100];
+        Task[] listOfTasks = new Task[100];
         int taskCounter = 0;
         String banner = "========================\n"
                 + "         YAWNED\n"
@@ -20,6 +20,8 @@ public class Yawned {
             if ("list".equals(userInput)) {
                 printTaskList(listOfTasks, taskCounter);
                 userInput = getUserInput(scanner, "");
+            } else if (userInput.startsWith("mark ") || "mark".equals(userInput)) {
+                userInput = getUserInput(scanner, markTask(listOfTasks, taskCounter, userInput));
             } else {
                 taskCounter = addTask(listOfTasks, userInput, taskCounter);
                 userInput = getUserInput(scanner, "added: " + userInput);
@@ -52,13 +54,17 @@ public class Yawned {
 
     /**
      * Adds a task to the list of tasks
-     * @param listOfTask task list
+     * @param listOfTasks task list
      * @param task new task to be added
      * @param taskCounter current task counter
      * @return new task count (+1)
      */
-    private static int addTask(String[] listOfTasks, String task,int taskCounter) {
-        listOfTasks[taskCounter] = task;
+    private static int addTask(Task[] listOfTasks, String task, int taskCounter) {
+        if (taskCounter == listOfTasks.length) {
+            System.out.println("Your task list is full.");
+            return taskCounter;
+        }
+        listOfTasks[taskCounter] = new Task(task);
         return ++taskCounter;
     }
 
@@ -67,13 +73,37 @@ public class Yawned {
      * @param listOfTasks list of tasks
      * @param taskCounter number of items in the tasklist.
      */
-    private static void printTaskList(String[] listOfTasks, int taskCounter) {
+    private static void printTaskList(Task[] listOfTasks, int taskCounter) {
         if (taskCounter == 0) {
             System.out.println("No Tasks!");
             return;
         }
+        System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < taskCounter; i++) {
-            System.out.printf("%d. %s%n", i+1, listOfTasks[i]);
+            System.out.printf("%d. %s%n", i + 1, listOfTasks[i]);
+        }
+    }
+
+    /**
+     * Marks the task selected by a {@code mark <number>} command as done.
+     *
+     * @param listOfTasks task list
+     * @param taskCounter number of stored tasks
+     * @param command user command
+     * @return result message for the user
+     */
+    private static String markTask(Task[] listOfTasks, int taskCounter, String command) {
+        String taskNumberText = command.substring("mark".length()).trim();
+        try {
+            int taskNumber = Integer.parseInt(taskNumberText);
+            if (taskNumber < 1 || taskNumber > taskCounter) {
+                return "you... don't have that task number???";
+            }
+            Task task = listOfTasks[taskNumber - 1];
+            task.markAsDone();
+            return "finally, that's done:\n  " + task;
+        } catch (NumberFormatException exception) {
+            return "*Yawns* You need to tell me which number to mark.. like: mark 2";
         }
     }
 }
