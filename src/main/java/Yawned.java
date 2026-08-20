@@ -16,13 +16,13 @@ public class Yawned {
         System.out.println(banner);
         String userInput = getUserInput(scanner, "*Yawns..* You woke me up...\nWhat do you want?\n");
         printBreakLine();
-        while (!userInput.equals("bye")) {
-            if (userInput.equals("list")) {
+        while (!"bye".equals(userInput)) {
+            if ("list".equals(userInput)) {
                 printTaskList(listOfTasks, taskCounter);
                 userInput = getUserInput(scanner, "");
             } else {
                 taskCounter = addTask(listOfTasks, userInput, taskCounter);
-                userInput = getUserInput(scanner, String.format("added: %s", userInput));
+                userInput = getUserInput(scanner, "added: %s" + userInput);
             }
             printBreakLine();
         }
@@ -62,7 +62,16 @@ public class Yawned {
         return ++taskCounter;
     }
 
+    /**
+     * prints the task list
+     * @param listOfTasks list of tasks
+     * @param taskCounter number of items in the tasklist.
+     */
     private static void printTaskList(String[] listOfTasks, int taskCounter) {
+        if (taskCounter == 0) {
+            System.out.println("No Tasks!");
+            return;
+        }
         for (int i = 0; i < taskCounter; i++) {
             System.out.printf("%d. %s%n", i+1, listOfTasks[i]);
         }
