@@ -22,7 +22,7 @@ public class Yawned {
                 userInput = getUserInput(scanner, "");
             } else {
                 taskCounter = addTask(listOfTasks, userInput, taskCounter);
-                userInput = getUserInput(scanner, "added: %s" + userInput);
+                userInput = getUserInput(scanner, "added: " + userInput);
             }
             printBreakLine();
         }
