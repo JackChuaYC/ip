@@ -25,10 +25,8 @@ public class Yawned {
             } else if (userInput.startsWith("unmark ") || "unmark".equals(userInput)) {
                 userInput = getUserInput(scanner, unmarkTask(listOfTasks, taskCounter, userInput));
             } else {
-                Task task = createTask(userInput);
-                if (task == null) {
-                    userInput = getUserInput(scanner, "could you provide a valid task description and time information??");
-                } else {
+                try {
+                    Task task = createTask(userInput);
                     int updatedTaskCounter = addTask(listOfTasks, task, taskCounter);
                     if (updatedTaskCounter == taskCounter) {
                         userInput = getUserInput(scanner, "sigh.. your task list is full.");
@@ -36,6 +34,8 @@ public class Yawned {
                         taskCounter = updatedTaskCounter;
                         userInput = getUserInput(scanner, addedTaskMessage(task, taskCounter));
                     }
+                } catch (YawnedException exception) {
+                    userInput = getUserInput(scanner, exception.getMessage());
                 }
             }
             printBreakLine();
@@ -83,35 +83,46 @@ public class Yawned {
      * Creates the task described by a task-creation command.
      *
      * @param command user command
-     * @return the created task, or {@code null} when the command is incomplete
+     * @return the created task
+     * @throws YawnedException if the command is incomplete or unknown
      */
-    private static Task createTask(String command) {
+    private static Task createTask(String command) throws YawnedException {
         if (command.startsWith("todo ") || "todo".equals(command)) {
             String description = command.substring("todo".length()).trim();
-            return description.isEmpty() ? null : new ToDo(description);
+            if (description.isEmpty()) {
+                throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
+            }
+            return new ToDo(description);
         }
         if (command.startsWith("deadline ") || "deadline".equals(command)) {
             String details = command.substring("deadline".length()).trim();
-            int byIndex = details.indexOf(" /by ");
-            if (byIndex <= 0 || byIndex + " /by ".length() >= details.length()) {
-                return null;
+            int byIndex = details.indexOf(" /by");
+            if (details.isEmpty() || byIndex == 0) {
+                throw new YawnedException("... The description of a deadline cannot be empty.");
             }
-            return new Deadline(details.substring(0, byIndex),
-                    details.substring(byIndex + " /by ".length()));
+            if (byIndex < 0 || details.substring(byIndex + " /by".length()).trim().isEmpty()) {
+                throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
+            }
+            return new Deadline(details.substring(0, byIndex).trim(),
+                    details.substring(byIndex + " /by".length()).trim());
         }
         if (command.startsWith("event ") || "event".equals(command)) {
             String details = command.substring("event".length()).trim();
-            int fromIndex = details.indexOf(" /from ");
-            int toIndex = details.indexOf(" /to ", fromIndex + " /from ".length());
-            if (fromIndex <= 0 || toIndex <= fromIndex + " /from ".length()
-                    || toIndex + " /to ".length() >= details.length()) {
-                return null;
+            int fromIndex = details.indexOf(" /from");
+            int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
+            if (details.isEmpty() || fromIndex == 0) {
+                throw new YawnedException("*yawns* The description of an event cannot be empty.");
             }
-            return new Event(details.substring(0, fromIndex),
-                    details.substring(fromIndex + " /from ".length(), toIndex),
-                    details.substring(toIndex + " /to ".length()));
+            if (fromIndex < 0 || toIndex < 0
+                    || details.substring(fromIndex + " /from".length(), toIndex).trim().isEmpty()
+                    || details.substring(toIndex + " /to".length()).trim().isEmpty()) {
+                throw new YawnedException("Excuse me, An event must include /from and /to times.");
+            }
+            return new Event(details.substring(0, fromIndex).trim(),
+                    details.substring(fromIndex + " /from".length(), toIndex).trim(),
+                    details.substring(toIndex + " /to".length()).trim());
         }
-        return command.isBlank() ? null : new ToDo(command); //Defaults to a Todo task
+        throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
     }
 
     /**
@@ -136,7 +147,7 @@ public class Yawned {
             System.out.println("No Tasks!");
             return;
         }
-        System.out.println("Here are the tasks in your list:");
+        System.out.println("Here you go, the tasks in your list:");
         for (int i = 0; i < taskCounter; i++) {
             System.out.printf("%d.%s%n", i + 1, listOfTasks[i]);
         }
