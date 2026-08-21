@@ -102,32 +102,32 @@ public class Yawned {
      * @return the created task
      * @throws YawnedException if the command is incomplete or unknown
      */
-    private static Task createTask(String command) throws YawnedException {
-        if (command.startsWith("todo ") || "todo".equals(command)) {
-            String description = command.substring("todo".length()).trim();
+    private static Task createTask(CommandType commandType, String command) throws YawnedException {
+        String details = command.substring(commandType.getWord().length()).trim();
+        switch (commandType) {
+        case TODO:
+            String description = details;
             if (description.isEmpty()) {
                 throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
             }
             return new ToDo(description);
-        }
-        if (command.startsWith("deadline ") || "deadline".equals(command)) {
-            String details = command.substring("deadline".length()).trim();
+        case DEADLINE:
             int byIndex = details.indexOf(" /by");
-            if (details.isEmpty() || byIndex == 0) {
-                throw new YawnedException("... The description of a deadline cannot be empty.");
+            if (details.isEmpty() || details.startsWith("/by")) {
+                throw new YawnedException(
+                        "I just want to sleep... you forgot to provide a description for the deadline");
             }
             if (byIndex < 0 || details.substring(byIndex + " /by".length()).trim().isEmpty()) {
                 throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
             }
             return new Deadline(details.substring(0, byIndex).trim(),
                     details.substring(byIndex + " /by".length()).trim());
-        }
-        if (command.startsWith("event ") || "event".equals(command)) {
-            String details = command.substring("event".length()).trim();
+        case EVENT:
             int fromIndex = details.indexOf(" /from");
             int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
-            if (details.isEmpty() || fromIndex == 0) {
-                throw new YawnedException("*yawns* The description of an event cannot be empty.");
+            if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
+                throw new YawnedException(
+                        "I just want to sleep... you forgot to provide a description for the event");
             }
             if (fromIndex < 0 || toIndex < 0
                     || details.substring(fromIndex + " /from".length(), toIndex).trim().isEmpty()
@@ -137,8 +137,11 @@ public class Yawned {
             return new Event(details.substring(0, fromIndex).trim(),
                     details.substring(fromIndex + " /from".length(), toIndex).trim(),
                     details.substring(toIndex + " /to".length()).trim());
+        case UNKNOWN:
+            throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
+        default:
+            throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
         }
-        throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
     }
 
     /**
@@ -166,6 +169,27 @@ public class Yawned {
     }
 
     /**
+     * Deletes the task selected by a {@code delete <number>} command and formats the result.
+     *
+     * @param listOfTasks task list
+     * @param command user command
+     * @return deletion confirmation or validation message
+     */
+    private static String deleteTaskMessage(List<Task> listOfTasks, String command) {
+        String taskNumberText = command.substring(CommandType.DELETE.getWord().length()).trim();
+        try {
+            int taskNumber = Integer.parseInt(taskNumberText);
+            if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
+                return "you... don't have that task number???";
+            }
+            Task deletedTask = deleteTask(listOfTasks, taskNumber);
+            return deletedTaskMessage(deletedTask, listOfTasks.size());
+        } catch (NumberFormatException exception) {
+            return "*Yawns* You need to tell me which number to delete.. like: delete 2";
+        }
+    }
+
+    /**
      * prints the task list
      * @param listOfTasks list of tasks
      */
@@ -188,7 +212,7 @@ public class Yawned {
      * @return result message for the user
      */
     private static String markTask(List<Task> listOfTasks, String command) {
-        String taskNumberText = command.substring("mark".length()).trim();
+        String taskNumberText = command.substring(CommandType.MARK.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
@@ -210,7 +234,7 @@ public class Yawned {
      * @return result message for the user
      */
     private static String unmarkTask(List<Task> listOfTasks, String command) {
-        String taskNumberText = command.substring("unmark".length()).trim();
+        String taskNumberText = command.substring(CommandType.UNMARK.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
