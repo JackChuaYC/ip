@@ -24,6 +24,21 @@ public class Yawned {
                 userInput = getUserInput(scanner, markTask(listOfTasks, taskCounter, userInput));
             } else if (userInput.startsWith("unmark ") || "unmark".equals(userInput)) {
                 userInput = getUserInput(scanner, unmarkTask(listOfTasks, taskCounter, userInput));
+            } else if (userInput.startsWith("delete ") || "delete".equals(userInput)) {
+                String taskNumberText = userInput.substring("delete".length()).trim();
+                try {
+                    int taskNumber = Integer.parseInt(taskNumberText);
+                    if (taskNumber < 1 || taskNumber > taskCounter) {
+                        userInput = getUserInput(scanner, "you... don't have that task number???");
+                    } else {
+                        Task deletedTask = deleteTask(listOfTasks, taskCounter, taskNumber);
+                        taskCounter--;
+                        userInput = getUserInput(scanner, deletedTaskMessage(deletedTask, taskCounter));
+                    }
+                } catch (NumberFormatException exception) {
+                    userInput = getUserInput(scanner,
+                            "*Yawns* You need to tell me which number to delete.. like: delete 2");
+                }
             } else {
                 try {
                     Task task = createTask(userInput);
@@ -77,6 +92,24 @@ public class Yawned {
         }
         listOfTasks[taskCounter] = task;
         return ++taskCounter;
+    }
+
+    /**
+     * Removes a task and shifts the following tasks forward to keep task numbers contiguous.
+     *
+     * @param listOfTasks task list
+     * @param taskCounter number of stored tasks
+     * @param taskNumber one-based number of the task to remove
+     * @return removed task
+     */
+    private static Task deleteTask(Task[] listOfTasks, int taskCounter, int taskNumber) {
+        int taskIndex = taskNumber - 1;
+        Task deletedTask = listOfTasks[taskIndex];
+        for (int i = taskIndex; i < taskCounter - 1; i++) {
+            listOfTasks[i] = listOfTasks[i + 1];
+        }
+        listOfTasks[taskCounter - 1] = null;
+        return deletedTask;
     }
 
     /**
@@ -134,6 +167,18 @@ public class Yawned {
      */
     private static String addedTaskMessage(Task task, int taskCounter) {
         return "Got it. I've added this task:\n  " + task
+                + "\nNow you have " + taskCounter + " tasks in the list.";
+    }
+
+    /**
+     * Formats the confirmation shown after a task is deleted.
+     *
+     * @param task deleted task
+     * @param taskCounter updated number of tasks
+     * @return confirmation message
+     */
+    private static String deletedTaskMessage(Task task, int taskCounter) {
+        return "fine. I removed this task:\n  " + task
                 + "\nNow you have " + taskCounter + " tasks in the list.";
     }
 
