@@ -1,5 +1,5 @@
 public class Deadline extends Task{
-    private String endDate;
+    private final String endDate;
 
     /**
      * Creates a deadline task with the given description and a deadline.
