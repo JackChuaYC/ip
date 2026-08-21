@@ -2,21 +2,19 @@
 
 ## Run command
 
-Compile `src/main/java/Task.java`, `src/main/java/ToDo.java`, and `src/main/java/Yawned.java` with Java 25, then run `Yawned` with the compiled classes on the classpath. Run each test case in a fresh console session.
+Compile all files in `src/main/java` with Java 25, then run `Yawned` with the compiled classes on the classpath. Run each test case in a fresh console session.
 
-## Test case: Unmark a completed task
+## Test case: Add and list each task type
 
-**Aim:** Verify that `unmark <number>` changes a completed task back to not done and that `list` displays the updated status.
+**Aim:** Verify that to-dos, deadlines, and events are created with their type-specific time information, and retain their type and done status when listed.
 
 **Inputs:**
 
 ```text
-read book
-return book
-buy bread
+todo borrow book
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
 mark 1
-mark 2
-unmark 2
 list
 bye
 ```
@@ -38,43 +36,37 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-added: read book
+Got it. I've added this task:
+  [T][ ] borrow book
+Now you have 1 tasks in the list.
 ____________________________________________________________
 
 ____________________________________________________________
 
-added: return book
+Got it. I've added this task:
+  [D][ ] return book (by: Sunday)
+Now you have 2 tasks in the list.
 ____________________________________________________________
 
 ____________________________________________________________
 
-added: buy bread
+Got it. I've added this task:
+  [E][ ] project meeting (from: Mon 2pm to: 4pm)
+Now you have 3 tasks in the list.
 ____________________________________________________________
 
 ____________________________________________________________
 
 finally, that's done:
-  [X] read book
-____________________________________________________________
-
-____________________________________________________________
-
-finally, that's done:
-  [X] return book
-____________________________________________________________
-
-____________________________________________________________
-
-As productive as me... unmarked:
-  [ ] return book
+  [T][X] borrow book
 ____________________________________________________________
 
 ____________________________________________________________
 
 Here are the tasks in your list:
-1. [X] read book
-2. [ ] return book
-3. [ ] buy bread
+1.[T][X] borrow book
+2.[D][ ] return book (by: Sunday)
+3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 
 ____________________________________________________________
 
