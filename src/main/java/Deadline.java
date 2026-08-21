@@ -1,4 +1,7 @@
-public class Deadline extends Task{
+/**
+ * Represents a task that must be completed by a specified time.
+ */
+public class Deadline extends Task {
     private final String endDate;
 
     /**
@@ -13,6 +16,6 @@ public class Deadline extends Task{
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + "(by: %s)".formatted(endDate);
+        return "[D]" + super.toString() + " (by: %s)".formatted(endDate);
     }
 }

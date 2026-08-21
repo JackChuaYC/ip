@@ -25,8 +25,18 @@ public class Yawned {
             } else if (userInput.startsWith("unmark ") || "unmark".equals(userInput)) {
                 userInput = getUserInput(scanner, unmarkTask(listOfTasks, taskCounter, userInput));
             } else {
-                taskCounter = addTask(listOfTasks, userInput, taskCounter);
-                userInput = getUserInput(scanner, "added: " + userInput);
+                Task task = createTask(userInput);
+                if (task == null) {
+                    userInput = getUserInput(scanner, "could you provide a valid task description and time information??");
+                } else {
+                    int updatedTaskCounter = addTask(listOfTasks, task, taskCounter);
+                    if (updatedTaskCounter == taskCounter) {
+                        userInput = getUserInput(scanner, "sigh.. your task list is full.");
+                    } else {
+                        taskCounter = updatedTaskCounter;
+                        userInput = getUserInput(scanner, addedTaskMessage(task, taskCounter));
+                    }
+                }
             }
             printBreakLine();
         }
@@ -61,13 +71,59 @@ public class Yawned {
      * @param taskCounter current task counter
      * @return new task count (+1)
      */
-    private static int addTask(Task[] listOfTasks, String task, int taskCounter) {
+    private static int addTask(Task[] listOfTasks, Task task, int taskCounter) {
         if (taskCounter == listOfTasks.length) {
-            System.out.println("Your task list is full.");
             return taskCounter;
         }
-        listOfTasks[taskCounter] = new ToDo(task);
+        listOfTasks[taskCounter] = task;
         return ++taskCounter;
+    }
+
+    /**
+     * Creates the task described by a task-creation command.
+     *
+     * @param command user command
+     * @return the created task, or {@code null} when the command is incomplete
+     */
+    private static Task createTask(String command) {
+        if (command.startsWith("todo ") || "todo".equals(command)) {
+            String description = command.substring("todo".length()).trim();
+            return description.isEmpty() ? null : new ToDo(description);
+        }
+        if (command.startsWith("deadline ") || "deadline".equals(command)) {
+            String details = command.substring("deadline".length()).trim();
+            int byIndex = details.indexOf(" /by ");
+            if (byIndex <= 0 || byIndex + " /by ".length() >= details.length()) {
+                return null;
+            }
+            return new Deadline(details.substring(0, byIndex),
+                    details.substring(byIndex + " /by ".length()));
+        }
+        if (command.startsWith("event ") || "event".equals(command)) {
+            String details = command.substring("event".length()).trim();
+            int fromIndex = details.indexOf(" /from ");
+            int toIndex = details.indexOf(" /to ", fromIndex + " /from ".length());
+            if (fromIndex <= 0 || toIndex <= fromIndex + " /from ".length()
+                    || toIndex + " /to ".length() >= details.length()) {
+                return null;
+            }
+            return new Event(details.substring(0, fromIndex),
+                    details.substring(fromIndex + " /from ".length(), toIndex),
+                    details.substring(toIndex + " /to ".length()));
+        }
+        return command.isBlank() ? null : new ToDo(command); //Defaults to a Todo task
+    }
+
+    /**
+     * Formats the confirmation shown after a task is successfully added.
+     *
+     * @param task added task
+     * @param taskCounter updated number of tasks
+     * @return confirmation message
+     */
+    private static String addedTaskMessage(Task task, int taskCounter) {
+        return "Got it. I've added this task:\n  " + task
+                + "\nNow you have " + taskCounter + " tasks in the list.";
     }
 
     /**
@@ -82,7 +138,7 @@ public class Yawned {
         }
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < taskCounter; i++) {
-            System.out.printf("%d. %s%n", i + 1, listOfTasks[i]);
+            System.out.printf("%d.%s%n", i + 1, listOfTasks[i]);
         }
     }
 
