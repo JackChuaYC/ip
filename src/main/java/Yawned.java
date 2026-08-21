@@ -22,6 +22,8 @@ public class Yawned {
                 userInput = getUserInput(scanner, "");
             } else if (userInput.startsWith("mark ") || "mark".equals(userInput)) {
                 userInput = getUserInput(scanner, markTask(listOfTasks, taskCounter, userInput));
+            } else if (userInput.startsWith("unmark ") || "unmark".equals(userInput)) {
+                userInput = getUserInput(scanner, unmarkTask(listOfTasks, taskCounter, userInput));
             } else {
                 taskCounter = addTask(listOfTasks, userInput, taskCounter);
                 userInput = getUserInput(scanner, "added: " + userInput);
@@ -104,6 +106,29 @@ public class Yawned {
             return "finally, that's done:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to mark.. like: mark 2";
+        }
+    }
+
+    /**
+     * Marks the task selected by an {@code unmark <number>} command as not done.
+     *
+     * @param listOfTasks task list
+     * @param taskCounter number of stored tasks
+     * @param command user command
+     * @return result message for the user
+     */
+    private static String unmarkTask(Task[] listOfTasks, int taskCounter, String command) {
+        String taskNumberText = command.substring("unmark".length()).trim();
+        try {
+            int taskNumber = Integer.parseInt(taskNumberText);
+            if (taskNumber < 1 || taskNumber > taskCounter) {
+                return "you... don't have that task number???";
+            }
+            Task task = listOfTasks[taskNumber - 1];
+            task.markAsUndone();
+            return "As productive as me... unmarked:\n  " + task;
+        } catch (NumberFormatException exception) {
+            return "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
         }
     }
 }
