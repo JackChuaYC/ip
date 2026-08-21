@@ -66,7 +66,7 @@ public class Yawned {
             System.out.println("Your task list is full.");
             return taskCounter;
         }
-        listOfTasks[taskCounter] = new Task(task);
+        listOfTasks[taskCounter] = new ToDo(task);
         return ++taskCounter;
     }
 
