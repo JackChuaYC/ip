@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -6,8 +8,7 @@ import java.util.Scanner;
 public class Yawned {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] listOfTasks = new Task[100];
-        int taskCounter = 0;
+        List<Task> listOfTasks = new ArrayList<>();
         String banner = "========================\n"
                 + "         YAWNED\n"
                 + "   Your sleepy chatbot\n"
@@ -18,22 +19,21 @@ public class Yawned {
         printBreakLine();
         while (!"bye".equals(userInput)) {
             if ("list".equals(userInput)) {
-                printTaskList(listOfTasks, taskCounter);
+                printTaskList(listOfTasks);
                 userInput = getUserInput(scanner, "");
             } else if (userInput.startsWith("mark ") || "mark".equals(userInput)) {
-                userInput = getUserInput(scanner, markTask(listOfTasks, taskCounter, userInput));
+                userInput = getUserInput(scanner, markTask(listOfTasks, userInput));
             } else if (userInput.startsWith("unmark ") || "unmark".equals(userInput)) {
-                userInput = getUserInput(scanner, unmarkTask(listOfTasks, taskCounter, userInput));
+                userInput = getUserInput(scanner, unmarkTask(listOfTasks, userInput));
             } else if (userInput.startsWith("delete ") || "delete".equals(userInput)) {
                 String taskNumberText = userInput.substring("delete".length()).trim();
                 try {
                     int taskNumber = Integer.parseInt(taskNumberText);
-                    if (taskNumber < 1 || taskNumber > taskCounter) {
+                    if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                         userInput = getUserInput(scanner, "you... don't have that task number???");
                     } else {
-                        Task deletedTask = deleteTask(listOfTasks, taskCounter, taskNumber);
-                        taskCounter--;
-                        userInput = getUserInput(scanner, deletedTaskMessage(deletedTask, taskCounter));
+                        Task deletedTask = deleteTask(listOfTasks, taskNumber);
+                        userInput = getUserInput(scanner, deletedTaskMessage(deletedTask, listOfTasks.size()));
                     }
                 } catch (NumberFormatException exception) {
                     userInput = getUserInput(scanner,
@@ -42,13 +42,8 @@ public class Yawned {
             } else {
                 try {
                     Task task = createTask(userInput);
-                    int updatedTaskCounter = addTask(listOfTasks, task, taskCounter);
-                    if (updatedTaskCounter == taskCounter) {
-                        userInput = getUserInput(scanner, "sigh.. your task list is full.");
-                    } else {
-                        taskCounter = updatedTaskCounter;
-                        userInput = getUserInput(scanner, addedTaskMessage(task, taskCounter));
-                    }
+                    addTask(listOfTasks, task);
+                    userInput = getUserInput(scanner, addedTaskMessage(task, listOfTasks.size()));
                 } catch (YawnedException exception) {
                     userInput = getUserInput(scanner, exception.getMessage());
                 }
@@ -83,33 +78,20 @@ public class Yawned {
      * Adds a task to the list of tasks
      * @param listOfTasks task list
      * @param task new task to be added
-     * @param taskCounter current task counter
-     * @return new task count (+1)
      */
-    private static int addTask(Task[] listOfTasks, Task task, int taskCounter) {
-        if (taskCounter == listOfTasks.length) {
-            return taskCounter;
-        }
-        listOfTasks[taskCounter] = task;
-        return ++taskCounter;
+    private static void addTask(List<Task> listOfTasks, Task task) {
+        listOfTasks.add(task);
     }
 
     /**
-     * Removes a task and shifts the following tasks forward to keep task numbers contiguous.
+     * Removes a task while keeping the remaining task numbers contiguous.
      *
      * @param listOfTasks task list
-     * @param taskCounter number of stored tasks
      * @param taskNumber one-based number of the task to remove
      * @return removed task
      */
-    private static Task deleteTask(Task[] listOfTasks, int taskCounter, int taskNumber) {
-        int taskIndex = taskNumber - 1;
-        Task deletedTask = listOfTasks[taskIndex];
-        for (int i = taskIndex; i < taskCounter - 1; i++) {
-            listOfTasks[i] = listOfTasks[i + 1];
-        }
-        listOfTasks[taskCounter - 1] = null;
-        return deletedTask;
+    private static Task deleteTask(List<Task> listOfTasks, int taskNumber) {
+        return listOfTasks.remove(taskNumber - 1);
     }
 
     /**
@@ -185,16 +167,15 @@ public class Yawned {
     /**
      * prints the task list
      * @param listOfTasks list of tasks
-     * @param taskCounter number of items in the tasklist.
      */
-    private static void printTaskList(Task[] listOfTasks, int taskCounter) {
-        if (taskCounter == 0) {
+    private static void printTaskList(List<Task> listOfTasks) {
+        if (listOfTasks.isEmpty()) {
             System.out.println("No Tasks!");
             return;
         }
         System.out.println("Here you go, the tasks in your list:");
-        for (int i = 0; i < taskCounter; i++) {
-            System.out.printf("%d.%s%n", i + 1, listOfTasks[i]);
+        for (int i = 0; i < listOfTasks.size(); i++) {
+            System.out.printf("%d.%s%n", i + 1, listOfTasks.get(i));
         }
     }
 
@@ -202,18 +183,17 @@ public class Yawned {
      * Marks the task selected by a {@code mark <number>} command as done.
      *
      * @param listOfTasks task list
-     * @param taskCounter number of stored tasks
      * @param command user command
      * @return result message for the user
      */
-    private static String markTask(Task[] listOfTasks, int taskCounter, String command) {
+    private static String markTask(List<Task> listOfTasks, String command) {
         String taskNumberText = command.substring("mark".length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
-            if (taskNumber < 1 || taskNumber > taskCounter) {
+            if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task task = listOfTasks[taskNumber - 1];
+            Task task = listOfTasks.get(taskNumber - 1);
             task.markAsDone();
             return "finally, that's done:\n  " + task;
         } catch (NumberFormatException exception) {
@@ -225,18 +205,17 @@ public class Yawned {
      * Marks the task selected by an {@code unmark <number>} command as not done.
      *
      * @param listOfTasks task list
-     * @param taskCounter number of stored tasks
      * @param command user command
      * @return result message for the user
      */
-    private static String unmarkTask(Task[] listOfTasks, int taskCounter, String command) {
+    private static String unmarkTask(List<Task> listOfTasks, String command) {
         String taskNumberText = command.substring("unmark".length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
-            if (taskNumber < 1 || taskNumber > taskCounter) {
+            if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task task = listOfTasks[taskNumber - 1];
+            Task task = listOfTasks.get(taskNumber - 1);
             task.markAsUndone();
             return "As productive as me... unmarked:\n  " + task;
         } catch (NumberFormatException exception) {
