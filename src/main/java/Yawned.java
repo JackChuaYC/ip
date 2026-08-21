@@ -17,38 +17,39 @@ public class Yawned {
         System.out.println(banner);
         String userInput = getUserInput(scanner, "*Yawns..* You woke me up...\nWhat do you want?\n");
         printBreakLine();
-        while (!"bye".equals(userInput)) {
-            if ("list".equals(userInput)) {
+        CommandType commandType = CommandType.fromInput(userInput);
+        while (commandType != CommandType.BYE) {
+            switch (commandType) {
+            case LIST:
                 printTaskList(listOfTasks);
                 userInput = getUserInput(scanner, "");
-            } else if (userInput.startsWith("mark ") || "mark".equals(userInput)) {
+                break;
+            case MARK:
                 userInput = getUserInput(scanner, markTask(listOfTasks, userInput));
-            } else if (userInput.startsWith("unmark ") || "unmark".equals(userInput)) {
+                break;
+            case UNMARK:
                 userInput = getUserInput(scanner, unmarkTask(listOfTasks, userInput));
-            } else if (userInput.startsWith("delete ") || "delete".equals(userInput)) {
-                String taskNumberText = userInput.substring("delete".length()).trim();
+                break;
+            case DELETE:
+                userInput = getUserInput(scanner, deleteTaskMessage(listOfTasks, userInput));
+                break;
+            case TODO:
+            case DEADLINE:
+            case EVENT:
+            case UNKNOWN:
                 try {
-                    int taskNumber = Integer.parseInt(taskNumberText);
-                    if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
-                        userInput = getUserInput(scanner, "you... don't have that task number???");
-                    } else {
-                        Task deletedTask = deleteTask(listOfTasks, taskNumber);
-                        userInput = getUserInput(scanner, deletedTaskMessage(deletedTask, listOfTasks.size()));
-                    }
-                } catch (NumberFormatException exception) {
-                    userInput = getUserInput(scanner,
-                            "*Yawns* You need to tell me which number to delete.. like: delete 2");
-                }
-            } else {
-                try {
-                    Task task = createTask(userInput);
+                    Task task = createTask(commandType, userInput);
                     addTask(listOfTasks, task);
                     userInput = getUserInput(scanner, addedTaskMessage(task, listOfTasks.size()));
                 } catch (YawnedException exception) {
                     userInput = getUserInput(scanner, exception.getMessage());
                 }
+                break;
+            default:
+                throw new IllegalStateException("Unexpected command type: " + commandType);
             }
             printBreakLine();
+            commandType = CommandType.fromInput(userInput);
         }
         System.out.println("Bye.. I am going back to sleep.");
         printBreakLine();

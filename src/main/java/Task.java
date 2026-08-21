@@ -3,19 +3,19 @@
  */
 public class Task {
     private final String description;
-    private boolean isDone;
+    private TaskStatus status;
 
     public Task(String description) {
         this.description = description;
-        this.isDone = false;
+        this.status = TaskStatus.NOT_DONE;
     }
 
     public void markAsDone() {
-        this.isDone = true;
+        this.status = TaskStatus.DONE;
     }
 
     public void markAsUndone() {
-        this.isDone = false;
+        this.status = TaskStatus.NOT_DONE;
     }
 
     /**
@@ -25,7 +25,6 @@ public class Task {
      */
     @Override
     public String toString() {
-        String status = isDone ? "[X]" : "[ ]";
-        return status + " " + description;
+        return status.getIcon() + " " + description;
     }
 }
