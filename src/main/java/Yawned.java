@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -6,6 +10,8 @@ import java.util.Scanner;
  * Entry point for the Yawned chatbot application.
  */
 public class Yawned {
+    private static final Path SAVE_FILE = Path.of("data", "Yawned.txt");
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         List<Task> listOfTasks = new ArrayList<>();
@@ -82,6 +88,7 @@ public class Yawned {
      */
     private static void addTask(List<Task> listOfTasks, Task task) {
         listOfTasks.add(task);
+        saveTaskList(listOfTasks);
     }
 
     /**
@@ -92,7 +99,51 @@ public class Yawned {
      * @return removed task
      */
     private static Task deleteTask(List<Task> listOfTasks, int taskNumber) {
-        return listOfTasks.remove(taskNumber - 1);
+        Task deletedTask = listOfTasks.remove(taskNumber - 1);
+        saveTaskList(listOfTasks);
+        return deletedTask;
+    }
+
+    /**
+     * Saves all tasks to the application's storage file.
+     *
+     * <p>Each line contains a task type, status, description, and any time fields,
+     * separated by {@code |}. This format is prepared for a later loading feature.</p>
+     *
+     * @param listOfTasks task list to save
+     */
+    private static void saveTaskList(List<Task> listOfTasks) {
+        try {
+            Files.createDirectories(SAVE_FILE.getParent());
+            try (BufferedWriter writer = Files.newBufferedWriter(SAVE_FILE)) {
+                for (Task task : listOfTasks) {
+                    writer.write(formatTaskForStorage(task));
+                    writer.newLine();
+                }
+            }
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to save the task list.", exception);
+        }
+    }
+
+    /**
+     * Formats one task as a line in the storage file.
+     *
+     * @param task task to format
+     * @return storage line for the task
+     */
+    private static String formatTaskForStorage(Task task) {
+        String commonFields = task.getStatus().getStorageValue() + " | " + task.getDescription();
+        if (task instanceof ToDo) {
+            return "T | " + commonFields;
+        }
+        if (task instanceof Deadline deadline) {
+            return "D | " + commonFields + " | " + deadline.getEndDate();
+        }
+        if (task instanceof Event event) {
+            return "E | " + commonFields + " | " + event.getStartDate() + " | " + event.getEndDate();
+        }
+        throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
     }
 
     /**
@@ -220,6 +271,7 @@ public class Yawned {
             }
             Task task = listOfTasks.get(taskNumber - 1);
             task.markAsDone();
+            saveTaskList(listOfTasks);
             return "finally, that's done:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to mark.. like: mark 2";
@@ -242,6 +294,7 @@ public class Yawned {
             }
             Task task = listOfTasks.get(taskNumber - 1);
             task.markAsUndone();
+            saveTaskList(listOfTasks);
             return "As productive as me... unmarked:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
