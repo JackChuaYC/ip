@@ -14,6 +14,15 @@ public class Deadline extends Task {
         this.endDate = endDate;
     }
 
+    /**
+     * Returns the deadline time for storage.
+     *
+     * @return deadline time
+     */
+    public String getEndDate() {
+        return endDate;
+    }
+
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: %s)".formatted(endDate);
