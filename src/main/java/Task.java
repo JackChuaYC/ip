@@ -19,6 +19,24 @@ public class Task {
     }
 
     /**
+     * Returns this task's description for storage.
+     *
+     * @return task description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Returns this task's completion status for storage.
+     *
+     * @return current completion status
+     */
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    /**
      * Returns the task description together with its completion status.
      *
      * @return task status and description
