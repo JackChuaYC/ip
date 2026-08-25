@@ -292,10 +292,10 @@ public class Yawned {
         switch (commandType) {
         case TODO:
             String description = details;
-            if (description.isEmpty()) {
+            if (details.isEmpty()) {
                 throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
             }
-            return new ToDo(description);
+            return new ToDo(details);
         case DEADLINE:
             int byIndex = details.indexOf(" /by");
             if (details.isEmpty() || details.startsWith("/by")) {
