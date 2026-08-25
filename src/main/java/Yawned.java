@@ -14,7 +14,7 @@ public class Yawned {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Task> listOfTasks = new ArrayList<>();
+        List<Task> listOfTasks = loadTaskList();
         String banner = "========================\n"
                 + "         YAWNED\n"
                 + "   Your sleepy chatbot\n"
@@ -108,7 +108,7 @@ public class Yawned {
      * Saves all tasks to the application's storage file.
      *
      * <p>Each line contains a task type, status, description, and any time fields,
-     * separated by {@code |}. This format is prepared for a later loading feature.</p>
+     * separated by {@code |}.</p>
      *
      * @param listOfTasks task list to save
      */
@@ -124,6 +124,49 @@ public class Yawned {
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to save the task list.", exception);
         }
+    }
+
+    /**
+     * Loads the task list from the application's storage file.
+     *
+     * @return tasks stored on disk, or an empty list when no storage file exists
+     */
+    private static List<Task> loadTaskList() {
+        List<Task> listOfTasks = new ArrayList<>();
+        if (!Files.exists(SAVE_FILE)) {
+            return listOfTasks;
+        }
+
+        try {
+            for (String storedTask : Files.readAllLines(SAVE_FILE)) {
+                if (!storedTask.isBlank()) {
+                    listOfTasks.add(createTaskFromStorage(storedTask));
+                }
+            }
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to load the task list.", exception);
+        }
+        return listOfTasks;
+    }
+
+    /**
+     * Recreates one task from a line in the storage file.
+     *
+     * @param storedTask storage line describing the task
+     * @return recreated task
+     */
+    private static Task createTaskFromStorage(String storedTask) {
+        String[] fields = storedTask.split(" \\| ", -1);
+        Task task = switch (fields[0]) {
+        case "T" -> new ToDo(fields[2]);
+        case "D" -> new Deadline(fields[2], fields[3]);
+        case "E" -> new Event(fields[2], fields[3], fields[4]);
+        default -> throw new IllegalArgumentException("Cannot load task type: " + fields[0]);
+        };
+        if (fields[1].equals("1")) {
+            task.markAsDone();
+        }
+        return task;
     }
 
     /**
