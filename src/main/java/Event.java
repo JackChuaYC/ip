@@ -18,6 +18,24 @@ public class Event extends Task {
         this.endDate = endDate;
     }
 
+    /**
+     * Returns the event start time for storage.
+     *
+     * @return event start time
+     */
+    public String getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Returns the event end time for storage.
+     *
+     * @return event end time
+     */
+    public String getEndDate() {
+        return endDate;
+    }
+
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: %s to: %s)".formatted(startDate, endDate);
