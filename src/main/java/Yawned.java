@@ -1,7 +1,9 @@
 import java.io.BufferedWriter;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,13 +16,13 @@ public class Yawned {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Task> listOfTasks = loadTaskList();
         String banner = "========================\n"
                 + "         YAWNED\n"
                 + "   Your sleepy chatbot\n"
                 + "========================\n";
         printBreakLine();
         System.out.println(banner);
+        List<Task> listOfTasks = loadTaskList();
         String userInput = getUserInput(scanner, "*Yawns..* You woke me up...\nWhat do you want?\n");
         printBreakLine();
         CommandType commandType = CommandType.fromInput(userInput);
@@ -113,16 +115,32 @@ public class Yawned {
      * @param listOfTasks task list to save
      */
     private static void saveTaskList(List<Task> listOfTasks) {
+        Path temporaryFile = null;
         try {
             Files.createDirectories(SAVE_FILE.getParent());
-            try (BufferedWriter writer = Files.newBufferedWriter(SAVE_FILE)) {
+            temporaryFile = SAVE_FILE.resolveSibling(SAVE_FILE.getFileName() + ".tmp");
+            try (BufferedWriter writer = Files.newBufferedWriter(temporaryFile)) {
                 for (Task task : listOfTasks) {
                     writer.write(formatTaskForStorage(task));
                     writer.newLine();
                 }
             }
+            try {
+                Files.move(temporaryFile, SAVE_FILE, StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException exception) {
+                Files.move(temporaryFile, SAVE_FILE, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException exception) {
-            throw new IllegalStateException("Unable to save the task list.", exception);
+            System.out.println("OOPS!!! I couldn't save the task list.");
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException ignored) {
+                    // The temporary file will not affect the saved task list.
+                }
+            }
         }
     }
 
@@ -138,13 +156,19 @@ public class Yawned {
         }
 
         try {
-            for (String storedTask : Files.readAllLines(SAVE_FILE)) {
+            List<String> storedTasks = Files.readAllLines(SAVE_FILE);
+            for (int i = 0; i < storedTasks.size(); i++) {
+                String storedTask = storedTasks.get(i);
                 if (!storedTask.isBlank()) {
-                    listOfTasks.add(createTaskFromStorage(storedTask));
+                    try {
+                        listOfTasks.add(createTaskFromStorage(storedTask));
+                    } catch (IllegalArgumentException exception) {
+                        System.out.println("OOPS!!! I skipped invalid saved task on line " + (i + 1) + ".");
+                    }
                 }
             }
         } catch (IOException exception) {
-            throw new IllegalStateException("Unable to load the task list.", exception);
+            System.out.println("OOPS!!! I couldn't read the saved task list. Starting with an empty list.");
         }
         return listOfTasks;
     }
@@ -156,17 +180,73 @@ public class Yawned {
      * @return recreated task
      */
     private static Task createTaskFromStorage(String storedTask) {
-        String[] fields = storedTask.split(" \\| ", -1);
-        Task task = switch (fields[0]) {
-        case "T" -> new ToDo(fields[2]);
-        case "D" -> new Deadline(fields[2], fields[3]);
-        case "E" -> new Event(fields[2], fields[3], fields[4]);
-        default -> throw new IllegalArgumentException("Cannot load task type: " + fields[0]);
+        List<String> fields = splitStorageFields(storedTask);
+        validateStorageFields(fields);
+        Task task = switch (fields.get(0)) {
+        case "T" -> new ToDo(fields.get(2));
+        case "D" -> new Deadline(fields.get(2), fields.get(3));
+        case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
+        default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
         };
-        if (fields[1].equals("1")) {
+        if (fields.get(1).equals("1")) {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Splits a storage line while restoring escaped pipes and backslashes.
+     *
+     * @param storedTask storage line to split
+     * @return fields contained in the storage line
+     */
+    private static List<String> splitStorageFields(String storedTask) {
+        List<String> fields = new ArrayList<>();
+        StringBuilder currentField = new StringBuilder();
+        for (int i = 0; i < storedTask.length(); i++) {
+            char character = storedTask.charAt(i);
+            if (character == '\\' && i + 1 < storedTask.length()) {
+                char nextCharacter = storedTask.charAt(i + 1);
+                if (nextCharacter == '|' || nextCharacter == '\\') {
+                    currentField.append(nextCharacter);
+                    i++;
+                    continue;
+                }
+            }
+            if (character == '|') {
+                fields.add(currentField.toString().trim());
+                currentField.setLength(0);
+            } else {
+                currentField.append(character);
+            }
+        }
+        fields.add(currentField.toString().trim());
+        return fields;
+    }
+
+    /**
+     * Checks that a storage line has the fields needed to recreate a task.
+     *
+     * @param fields fields extracted from the storage line
+     */
+    private static void validateStorageFields(List<String> fields) {
+        if (fields.size() < 2 || (!fields.get(1).equals("0") && !fields.get(1).equals("1"))) {
+            throw new IllegalArgumentException("Invalid task status.");
+        }
+        int expectedFieldCount = switch (fields.get(0)) {
+            case "T" -> 3;
+            case "D" -> 4;
+            case "E" -> 5;
+            default -> throw new IllegalArgumentException("Invalid task type.");
+        };
+        if (fields.size() != expectedFieldCount) {
+            throw new IllegalArgumentException("Invalid number of task fields.");
+        }
+        for (int i = 2; i < fields.size(); i++) {
+            if (fields.get(i).isBlank()) {
+                throw new IllegalArgumentException("Task fields cannot be empty.");
+            }
+        }
     }
 
     /**
@@ -176,17 +256,28 @@ public class Yawned {
      * @return storage line for the task
      */
     private static String formatTaskForStorage(Task task) {
-        String commonFields = task.getStatus().getStorageValue() + " | " + task.getDescription();
+        String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
         if (task instanceof ToDo) {
             return "T | " + commonFields;
         }
         if (task instanceof Deadline deadline) {
-            return "D | " + commonFields + " | " + deadline.getEndDate();
+            return "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate());
         }
         if (task instanceof Event event) {
-            return "E | " + commonFields + " | " + event.getStartDate() + " | " + event.getEndDate();
+            return "E | " + commonFields + " | " + escapeStorageField(event.getStartDate())
+                    + " | " + escapeStorageField(event.getEndDate());
         }
         throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
+    }
+
+    /**
+     * Escapes separators in one storage field.
+     *
+     * @param field field value to escape
+     * @return escaped field value
+     */
+    private static String escapeStorageField(String field) {
+        return field.replace("\\", "\\\\").replace("|", "\\|");
     }
 
     /**
