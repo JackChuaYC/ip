@@ -16,10 +16,12 @@ public class Yawned {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String banner = "========================\n"
-                + "         YAWNED\n"
-                + "   Your sleepy chatbot\n"
-                + "========================\n";
+        String banner = """
+                 ========================
+                          YAWNED
+                    Your sleepy chatbot
+                 ========================
+                 """;
         printBreakLine();
         System.out.println(banner);
         List<Task> listOfTasks = loadTaskList();
@@ -28,33 +30,33 @@ public class Yawned {
         CommandType commandType = CommandType.fromInput(userInput);
         while (commandType != CommandType.BYE) {
             switch (commandType) {
-            case LIST:
-                printTaskList(listOfTasks);
-                userInput = getUserInput(scanner, "");
-                break;
-            case MARK:
-                userInput = getUserInput(scanner, markTask(listOfTasks, userInput));
-                break;
-            case UNMARK:
-                userInput = getUserInput(scanner, unmarkTask(listOfTasks, userInput));
-                break;
-            case DELETE:
-                userInput = getUserInput(scanner, deleteTaskMessage(listOfTasks, userInput));
-                break;
-            case TODO:
-            case DEADLINE:
-            case EVENT:
-            case UNKNOWN:
-                try {
-                    Task task = createTask(commandType, userInput);
-                    addTask(listOfTasks, task);
-                    userInput = getUserInput(scanner, addedTaskMessage(task, listOfTasks.size()));
-                } catch (YawnedException exception) {
-                    userInput = getUserInput(scanner, exception.getMessage());
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unexpected command type: " + commandType);
+                case LIST:
+                    printTaskList(listOfTasks);
+                    userInput = getUserInput(scanner, "");
+                    break;
+                case MARK:
+                    userInput = getUserInput(scanner, markTask(listOfTasks, userInput));
+                    break;
+                case UNMARK:
+                    userInput = getUserInput(scanner, unmarkTask(listOfTasks, userInput));
+                    break;
+                case DELETE:
+                    userInput = getUserInput(scanner, deleteTaskMessage(listOfTasks, userInput));
+                    break;
+                case TODO:
+                case DEADLINE:
+                case EVENT:
+                case UNKNOWN:
+                    try {
+                        Task task = createTask(commandType, userInput);
+                        addTask(listOfTasks, task);
+                        userInput = getUserInput(scanner, addedTaskMessage(task, listOfTasks.size()));
+                    } catch (YawnedException exception) {
+                        userInput = getUserInput(scanner, exception.getMessage());
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected command type: " + commandType);
             }
             printBreakLine();
             commandType = CommandType.fromInput(userInput);
@@ -183,10 +185,10 @@ public class Yawned {
         List<String> fields = splitStorageFields(storedTask);
         validateStorageFields(fields);
         Task task = switch (fields.get(0)) {
-        case "T" -> new ToDo(fields.get(2));
-        case "D" -> new Deadline(fields.get(2), fields.get(3));
-        case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
-        default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
+            case "T" -> new ToDo(fields.get(2));
+            case "D" -> new Deadline(fields.get(2), fields.get(3));
+            case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
+            default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
         };
         if (fields.get(1).equals("1")) {
             task.markAsDone();
@@ -257,17 +259,13 @@ public class Yawned {
      */
     private static String formatTaskForStorage(Task task) {
         String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
-        if (task instanceof ToDo) {
-            return "T | " + commonFields;
-        }
-        if (task instanceof Deadline deadline) {
-            return "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate());
-        }
-        if (task instanceof Event event) {
-            return "E | " + commonFields + " | " + escapeStorageField(event.getStartDate())
+        return switch (task) {
+            case ToDo ignored -> "T | " + commonFields;
+            case Deadline deadline -> "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate());
+            case Event event -> "E | " + commonFields + " | " + escapeStorageField(event.getStartDate())
                     + " | " + escapeStorageField(event.getEndDate());
-        }
-        throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
+            default -> throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
+        };
     }
 
     /**
@@ -290,42 +288,41 @@ public class Yawned {
     private static Task createTask(CommandType commandType, String command) throws YawnedException {
         String details = command.substring(commandType.getWord().length()).trim();
         switch (commandType) {
-        case TODO:
-            String description = details;
-            if (details.isEmpty()) {
-                throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
-            }
-            return new ToDo(details);
-        case DEADLINE:
-            int byIndex = details.indexOf(" /by");
-            if (details.isEmpty() || details.startsWith("/by")) {
-                throw new YawnedException(
-                        "I just want to sleep... you forgot to provide a description for the deadline");
-            }
-            if (byIndex < 0 || details.substring(byIndex + " /by".length()).trim().isEmpty()) {
-                throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
-            }
-            return new Deadline(details.substring(0, byIndex).trim(),
-                    details.substring(byIndex + " /by".length()).trim());
-        case EVENT:
-            int fromIndex = details.indexOf(" /from");
-            int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
-            if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
-                throw new YawnedException(
-                        "I just want to sleep... you forgot to provide a description for the event");
-            }
-            if (fromIndex < 0 || toIndex < 0
-                    || details.substring(fromIndex + " /from".length(), toIndex).trim().isEmpty()
-                    || details.substring(toIndex + " /to".length()).trim().isEmpty()) {
-                throw new YawnedException("Excuse me, An event must include /from and /to times.");
-            }
-            return new Event(details.substring(0, fromIndex).trim(),
-                    details.substring(fromIndex + " /from".length(), toIndex).trim(),
-                    details.substring(toIndex + " /to".length()).trim());
-        case UNKNOWN:
-            throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
-        default:
-            throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
+            case TODO:
+                if (details.isEmpty()) {
+                    throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
+                }
+                return new ToDo(details);
+            case DEADLINE:
+                int byIndex = details.indexOf(" /by");
+                if (details.isEmpty() || details.startsWith("/by")) {
+                    throw new YawnedException(
+                            "I just want to sleep... you forgot to provide a description for the deadline");
+                }
+                if (byIndex < 0 || details.substring(byIndex + " /by".length()).trim().isEmpty()) {
+                    throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
+                }
+                return new Deadline(details.substring(0, byIndex).trim(),
+                        details.substring(byIndex + " /by".length()).trim());
+            case EVENT:
+                int fromIndex = details.indexOf(" /from");
+                int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
+                if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
+                    throw new YawnedException(
+                            "I just want to sleep... you forgot to provide a description for the event");
+                }
+                if (fromIndex < 0 || toIndex < 0
+                        || details.substring(fromIndex + " /from".length(), toIndex).trim().isEmpty()
+                        || details.substring(toIndex + " /to".length()).trim().isEmpty()) {
+                    throw new YawnedException("Excuse me, An event must include /from and /to times.");
+                }
+                return new Event(details.substring(0, fromIndex).trim(),
+                        details.substring(fromIndex + " /from".length(), toIndex).trim(),
+                        details.substring(toIndex + " /to".length()).trim());
+            case UNKNOWN:
+                throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
+            default:
+                throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
         }
     }
 
