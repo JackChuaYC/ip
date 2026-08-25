@@ -260,7 +260,7 @@ public class Yawned {
     private static String formatTaskForStorage(Task task) {
         String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
         return switch (task) {
-            case ToDo ignored -> "T | " + commonFields;
+            case ToDo _ -> "T | " + commonFields;
             case Deadline deadline -> "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate());
             case Event event -> "E | " + commonFields + " | " + escapeStorageField(event.getStartDate())
                     + " | " + escapeStorageField(event.getEndDate());
@@ -299,11 +299,11 @@ public class Yawned {
                     throw new YawnedException(
                             "I just want to sleep... you forgot to provide a description for the deadline");
                 }
-                if (byIndex < 0 || details.substring(byIndex + " /by".length()).trim().isEmpty()) {
+                String endDate = details.substring(byIndex + " /by".length()).trim();
+                if (byIndex < 0 || endDate.isEmpty()) {
                     throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
                 }
-                return new Deadline(details.substring(0, byIndex).trim(),
-                        details.substring(byIndex + " /by".length()).trim());
+                return new Deadline(details.substring(0, byIndex).trim(),endDate);
             case EVENT:
                 int fromIndex = details.indexOf(" /from");
                 int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
@@ -311,14 +311,13 @@ public class Yawned {
                     throw new YawnedException(
                             "I just want to sleep... you forgot to provide a description for the event");
                 }
-                if (fromIndex < 0 || toIndex < 0
-                        || details.substring(fromIndex + " /from".length(), toIndex).trim().isEmpty()
-                        || details.substring(toIndex + " /to".length()).trim().isEmpty()) {
+
+                String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
+                String toDate = details.substring(toIndex + " /to".length()).trim();
+                if (fromIndex < 0 || toIndex < 0 || fromDate.isEmpty() || toDate.isEmpty()){
                     throw new YawnedException("Excuse me, An event must include /from and /to times.");
                 }
-                return new Event(details.substring(0, fromIndex).trim(),
-                        details.substring(fromIndex + " /from".length(), toIndex).trim(),
-                        details.substring(toIndex + " /to".length()).trim());
+                return new Event(details.substring(0, fromIndex).trim(), fromDate, toDate);
             case UNKNOWN:
                 throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
             default:
