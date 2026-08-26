@@ -1,4 +1,4 @@
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -6,15 +6,16 @@ import java.util.Locale;
  * Represents a task that must be completed by a specified time.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
-    private final LocalDate endDate;
+    private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(
+            "MMM dd uuuu HHmm", Locale.ENGLISH);
+    private final LocalDateTime endDate;
 
     /**
      * Creates a deadline task with the given description and a deadline.
      *
      * @param description description of the task
      */
-    public Deadline(String description, LocalDate endDate) {
+    public Deadline(String description, LocalDateTime endDate) {
         super(description);
         this.endDate = endDate;
     }
@@ -24,13 +25,13 @@ public class Deadline extends Task {
      *
      * @return deadline time
      */
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: %s)".formatted(
-                endDate.format(DISPLAY_DATE_FORMAT).toUpperCase(Locale.ENGLISH));
+                endDate.format(DISPLAY_DATE_TIME_FORMAT).toUpperCase(Locale.ENGLISH));
     }
 }

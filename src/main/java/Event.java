@@ -1,4 +1,4 @@
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -6,9 +6,10 @@ import java.util.Locale;
  * Represents a task that takes place between a start and end time.
  */
 public class Event extends Task {
-    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
-    private final LocalDate endDate;
-    private final LocalDate startDate;
+    private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(
+            "MMM dd uuuu HHmm", Locale.ENGLISH);
+    private final LocalDateTime endDate;
+    private final LocalDateTime startDate;
 
     /**
      * Creates an event with the given description, start time, and end time.
@@ -17,7 +18,7 @@ public class Event extends Task {
      * @param startDate event start time
      * @param endDate event end time
      */
-    public Event(String description, LocalDate startDate, LocalDate endDate) {
+    public Event(String description, LocalDateTime startDate, LocalDateTime endDate) {
         super(description);
         this.startDate = startDate;
         this.endDate = endDate;
@@ -28,7 +29,7 @@ public class Event extends Task {
      *
      * @return event start time
      */
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
@@ -37,7 +38,7 @@ public class Event extends Task {
      *
      * @return event end time
      */
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
@@ -53,7 +54,7 @@ public class Event extends Task {
      * @param date date to format
      * @return formatted date
      */
-    private static String formatDate(LocalDate date) {
-        return date.format(DISPLAY_DATE_FORMAT).toUpperCase(Locale.ENGLISH);
+    private static String formatDate(LocalDateTime date) {
+        return date.format(DISPLAY_DATE_TIME_FORMAT).toUpperCase(Locale.ENGLISH);
     }
 }
