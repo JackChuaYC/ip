@@ -1,17 +1,32 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task that must be completed by a specified time.
  */
 public class Deadline extends Task {
-    private final String endDate;
+    private final LocalDate endDate;
 
     /**
      * Creates a deadline task with the given description and a deadline.
      *
      * @param description description of the task
      */
-    public Deadline(String description, String endDate) {
+    public Deadline(String description, LocalDate endDate) {
         super(description);
         this.endDate = endDate;
+    }
+
+    /**
+     * Creates a deadline task from an ISO date string during the transition to
+     * parsing dates in the chatbot.
+     *
+     * @param description description of the task
+     * @param endDate deadline in {@code yyyy-MM-dd} format
+     * @deprecated pass a {@link LocalDate} instead
+     */
+    @Deprecated
+    public Deadline(String description, String endDate) {
+        this(description, LocalDate.parse(endDate));
     }
 
     /**
@@ -19,7 +34,7 @@ public class Deadline extends Task {
      *
      * @return deadline time
      */
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
