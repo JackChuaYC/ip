@@ -1,7 +1,10 @@
 import java.io.BufferedWriter;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +19,9 @@ import java.util.Scanner;
  */
 public class Yawned {
     private static final Path SAVE_FILE = Path.of("data", "Yawned.txt");
+    private static final DateTimeFormatter INPUT_DATE_TIME_FORMAT = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -189,8 +195,9 @@ public class Yawned {
         validateStorageFields(fields);
         Task task = switch (fields.get(0)) {
             case "T" -> new ToDo(fields.get(2));
-            case "D" -> new Deadline(fields.get(2), LocalDate.parse(fields.get(3)));
-            case "E" -> new Event(fields.get(2), LocalDate.parse(fields.get(3)), LocalDate.parse(fields.get(4)));
+            case "D" -> new Deadline(fields.get(2), LocalDateTime.parse(fields.get(3)));
+            case "E" -> new Event(fields.get(2), LocalDateTime.parse(fields.get(3)),
+                    LocalDateTime.parse(fields.get(4)));
             default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
         };
         if (fields.get(1).equals("1")) {
@@ -297,6 +304,21 @@ public class Yawned {
     }
 
     /**
+     * Parses a date and time written in {@code yyyy-MM-dd HHmm} format.
+     *
+     * @param dateTimeText date and time text to parse
+     * @return parsed date and time
+     * @throws YawnedException if the input is not a valid date and time
+     */
+    private static LocalDateTime parseDateTime(String dateTimeText) throws YawnedException {
+        try {
+            return LocalDateTime.parse(dateTimeText, INPUT_DATE_TIME_FORMAT);
+        } catch (DateTimeParseException exception) {
+            throw new YawnedException("Please use a valid date and time in yyyy-MM-dd HHmm format.");
+        }
+    }
+
+    /**
      * Creates the task described by a task-creation command.
      *
      * @param command user command
@@ -324,7 +346,7 @@ public class Yawned {
                 if (endDate.isEmpty()) {
                     throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
                 }
-                return new Deadline(details.substring(0, byIndex).trim(), parseDate(endDate));
+                return new Deadline(details.substring(0, byIndex).trim(), parseDateTime(endDate));
             case EVENT:
                 int fromIndex = details.indexOf(" /from");
                 if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
@@ -343,7 +365,7 @@ public class Yawned {
                 if (fromDate.isEmpty() || toDate.isEmpty()) {
                     throw new YawnedException("Excuse me, An event must include /from and /to times.");
                 }
-                return new Event(details.substring(0, fromIndex).trim(), parseDate(fromDate), parseDate(toDate));
+                return new Event(details.substring(0, fromIndex).trim(), parseDateTime(fromDate), parseDateTime(toDate));
             case UNKNOWN:
                 throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
             default:
