@@ -1,4 +1,6 @@
 import java.io.BufferedWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -276,6 +278,21 @@ public class Yawned {
      */
     private static String escapeStorageField(String field) {
         return field.replace("\\", "\\\\").replace("|", "\\|");
+    }
+
+    /**
+     * Parses a date written in ISO {@code yyyy-MM-dd} format.
+     *
+     * @param dateText date text to parse
+     * @return parsed date
+     * @throws YawnedException if the date is not a valid {@code yyyy-MM-dd} date
+     */
+    private static LocalDate parseDate(String dateText) throws YawnedException {
+        try {
+            return LocalDate.parse(dateText);
+        } catch (DateTimeParseException exception) {
+            throw new YawnedException("Please use a valid date in yyyy-MM-dd format.");
+        }
     }
 
     /**
