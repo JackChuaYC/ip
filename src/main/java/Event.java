@@ -1,9 +1,12 @@
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Represents a task that takes place between a start and end time.
  */
 public class Event extends Task {
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
     private final LocalDate endDate;
     private final LocalDate startDate;
 
@@ -18,20 +21,6 @@ public class Event extends Task {
         super(description);
         this.startDate = startDate;
         this.endDate = endDate;
-    }
-
-    /**
-     * Creates an event from ISO date strings during the transition to parsing
-     * dates in the chatbot.
-     *
-     * @param description description of the event
-     * @param startDate event start date in {@code yyyy-MM-dd} format
-     * @param endDate event end date in {@code yyyy-MM-dd} format
-     * @deprecated pass {@link LocalDate} objects instead
-     */
-    @Deprecated
-    public Event(String description, String startDate, String endDate) {
-        this(description, LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
 
     /**
@@ -54,6 +43,17 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: %s to: %s)".formatted(startDate, endDate);
+        return "[E]" + super.toString() + " (from: %s to: %s)".formatted(
+                formatDate(startDate), formatDate(endDate));
+    }
+
+    /**
+     * Formats a date for display in the task list.
+     *
+     * @param date date to format
+     * @return formatted date
+     */
+    private static String formatDate(LocalDate date) {
+        return date.format(DISPLAY_DATE_FORMAT).toUpperCase(Locale.ENGLISH);
     }
 }

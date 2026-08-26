@@ -1,9 +1,12 @@
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Represents a task that must be completed by a specified time.
  */
 public class Deadline extends Task {
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
     private final LocalDate endDate;
 
     /**
@@ -17,19 +20,6 @@ public class Deadline extends Task {
     }
 
     /**
-     * Creates a deadline task from an ISO date string during the transition to
-     * parsing dates in the chatbot.
-     *
-     * @param description description of the task
-     * @param endDate deadline in {@code yyyy-MM-dd} format
-     * @deprecated pass a {@link LocalDate} instead
-     */
-    @Deprecated
-    public Deadline(String description, String endDate) {
-        this(description, LocalDate.parse(endDate));
-    }
-
-    /**
      * Returns the deadline time for storage.
      *
      * @return deadline time
@@ -40,6 +30,7 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: %s)".formatted(endDate);
+        return "[D]" + super.toString() + " (by: %s)".formatted(
+                endDate.format(DISPLAY_DATE_FORMAT).toUpperCase(Locale.ENGLISH));
     }
 }

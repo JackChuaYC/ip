@@ -1,4 +1,5 @@
 import java.io.BufferedWriter;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -166,7 +167,7 @@ public class Yawned {
                 if (!storedTask.isBlank()) {
                     try {
                         listOfTasks.add(createTaskFromStorage(storedTask));
-                    } catch (IllegalArgumentException exception) {
+                    } catch (IllegalArgumentException | DateTimeException exception) {
                         System.out.println("OOPS!!! I skipped invalid saved task on line " + (i + 1) + ".");
                     }
                 }
@@ -188,8 +189,8 @@ public class Yawned {
         validateStorageFields(fields);
         Task task = switch (fields.get(0)) {
             case "T" -> new ToDo(fields.get(2));
-            case "D" -> new Deadline(fields.get(2), fields.get(3));
-            case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
+            case "D" -> new Deadline(fields.get(2), LocalDate.parse(fields.get(3)));
+            case "E" -> new Event(fields.get(2), LocalDate.parse(fields.get(3)), LocalDate.parse(fields.get(4)));
             default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
         };
         if (fields.get(1).equals("1")) {
@@ -263,9 +264,9 @@ public class Yawned {
         String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
         return switch (task) {
             case ToDo _ -> "T | " + commonFields;
-            case Deadline deadline -> "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate());
-            case Event event -> "E | " + commonFields + " | " + escapeStorageField(event.getStartDate())
-                    + " | " + escapeStorageField(event.getEndDate());
+            case Deadline deadline -> "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate().toString());
+            case Event event -> "E | " + commonFields + " | " + escapeStorageField(event.getStartDate().toString())
+                    + " | " + escapeStorageField(event.getEndDate().toString());
             default -> throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
         };
     }
@@ -316,25 +317,33 @@ public class Yawned {
                     throw new YawnedException(
                             "I just want to sleep... you forgot to provide a description for the deadline");
                 }
-                String endDate = details.substring(byIndex + " /by".length()).trim();
-                if (byIndex < 0 || endDate.isEmpty()) {
+                if (byIndex < 0) {
                     throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
                 }
-                return new Deadline(details.substring(0, byIndex).trim(),endDate);
+                String endDate = details.substring(byIndex + " /by".length()).trim();
+                if (endDate.isEmpty()) {
+                    throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
+                }
+                return new Deadline(details.substring(0, byIndex).trim(), parseDate(endDate));
             case EVENT:
                 int fromIndex = details.indexOf(" /from");
-                int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
                 if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
                     throw new YawnedException(
                             "I just want to sleep... you forgot to provide a description for the event");
                 }
-
-                String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
-                String toDate = details.substring(toIndex + " /to".length()).trim();
-                if (fromIndex < 0 || toIndex < 0 || fromDate.isEmpty() || toDate.isEmpty()){
+                if (fromIndex < 0) {
                     throw new YawnedException("Excuse me, An event must include /from and /to times.");
                 }
-                return new Event(details.substring(0, fromIndex).trim(), fromDate, toDate);
+                int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
+                if (toIndex < 0) {
+                    throw new YawnedException("Excuse me, An event must include /from and /to times.");
+                }
+                String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
+                String toDate = details.substring(toIndex + " /to".length()).trim();
+                if (fromDate.isEmpty() || toDate.isEmpty()) {
+                    throw new YawnedException("Excuse me, An event must include /from and /to times.");
+                }
+                return new Event(details.substring(0, fromIndex).trim(), parseDate(fromDate), parseDate(toDate));
             case UNKNOWN:
                 throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
             default:
