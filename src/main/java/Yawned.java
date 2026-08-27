@@ -24,33 +24,26 @@ public class Yawned {
             .withResolverStyle(ResolverStyle.STRICT);
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        String banner = """
-                 ========================
-                          YAWNED
-                    Your sleepy chatbot
-                 ========================
-                 """;
-        printBreakLine();
-        System.out.println(banner);
+        Ui ui = new Ui(new Scanner(System.in));
+        ui.showWelcome();
         List<Task> listOfTasks = loadTaskList();
-        String userInput = getUserInput(scanner, "*Yawns..* You woke me up...\nWhat do you want?\n");
-        printBreakLine();
+        String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
+        ui.showBreakLine();
         CommandType commandType = CommandType.fromInput(userInput);
         while (commandType != CommandType.BYE) {
             switch (commandType) {
                 case LIST:
-                    printTaskList(listOfTasks);
-                    userInput = getUserInput(scanner, "");
+                    ui.showTaskList(listOfTasks);
+                    userInput = ui.readCommand("");
                     break;
                 case MARK:
-                    userInput = getUserInput(scanner, markTask(listOfTasks, userInput));
+                    userInput = ui.readCommand(markTask(listOfTasks, userInput));
                     break;
                 case UNMARK:
-                    userInput = getUserInput(scanner, unmarkTask(listOfTasks, userInput));
+                    userInput = ui.readCommand(unmarkTask(listOfTasks, userInput));
                     break;
                 case DELETE:
-                    userInput = getUserInput(scanner, deleteTaskMessage(listOfTasks, userInput));
+                    userInput = ui.readCommand(deleteTaskMessage(listOfTasks, userInput));
                     break;
                 case TODO:
                 case DEADLINE:
@@ -59,39 +52,19 @@ public class Yawned {
                     try {
                         Task task = createTask(commandType, userInput);
                         addTask(listOfTasks, task);
-                        userInput = getUserInput(scanner, addedTaskMessage(task, listOfTasks.size()));
+                        userInput = ui.readCommand(addedTaskMessage(task, listOfTasks.size()));
                     } catch (YawnedException exception) {
-                        userInput = getUserInput(scanner, exception.getMessage());
+                        userInput = ui.readCommand(exception.getMessage());
                     }
                     break;
                 default:
                     throw new IllegalStateException("Unexpected command type: " + commandType);
             }
-            printBreakLine();
+            ui.showBreakLine();
             commandType = CommandType.fromInput(userInput);
         }
-        System.out.println("Bye.. I am going back to sleep.");
-        printBreakLine();
-    }
-
-    /**
-     *Prints the breakline for clearer "new command"
-     */
-    private static void printBreakLine() {
-        System.out.println("____________________________________________________________\n");
-    }
-
-    /**
-     * Gets input from user.
-     *
-     * @param scanner object to get input.
-     * @param message output message to user.
-     * @return string object.
-     */
-    private static String getUserInput(Scanner scanner, String message) {
-        System.out.println(message);
-        printBreakLine();
-        return scanner.nextLine();
+        ui.showMessage("Bye.. I am going back to sleep.");
+        ui.showBreakLine();
     }
 
     /**
@@ -415,21 +388,6 @@ public class Yawned {
             return deletedTaskMessage(deletedTask, listOfTasks.size());
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to delete.. like: delete 2";
-        }
-    }
-
-    /**
-     * prints the task list
-     * @param listOfTasks list of tasks
-     */
-    private static void printTaskList(List<Task> listOfTasks) {
-        if (listOfTasks.isEmpty()) {
-            System.out.println("No Tasks!");
-            return;
-        }
-        System.out.println("Here you go, the tasks in your list:");
-        for (int i = 0; i < listOfTasks.size(); i++) {
-            System.out.printf("%d.%s%n", i + 1, listOfTasks.get(i));
         }
     }
 
