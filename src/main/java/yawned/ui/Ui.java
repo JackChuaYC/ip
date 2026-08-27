@@ -1,7 +1,9 @@
 package yawned.ui;
 
+import java.util.List;
 import java.util.Scanner;
 
+import yawned.task.Task;
 import yawned.task.TaskList;
 
 /**
@@ -68,6 +70,22 @@ public class Ui {
         System.out.println("Here you go, the tasks in your list:");
         for (int i = 1; i <= taskList.size(); i++) {
             System.out.printf("%d.%s%n", i, taskList.getTask(i));
+        }
+    }
+
+    /**
+     * Shows the tasks whose descriptions match a search keyword.
+     *
+     * @param matchingTasks tasks that matched the keyword
+     */
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        if (matchingTasks.isEmpty()) {
+            System.out.println("No matching tasks!");
+            return;
+        }
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.printf("%d.%s%n", i + 1, matchingTasks.get(i));
         }
     }
 

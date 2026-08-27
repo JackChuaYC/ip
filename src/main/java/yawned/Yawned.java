@@ -53,6 +53,9 @@ public class Yawned {
             case DELETE:
                 userInput = ui.readCommand(deleteTaskMessage(userInput));
                 break;
+            case FIND:
+                userInput = ui.readCommand(findTaskMessage(userInput));
+                break;
             case TODO:
             case DEADLINE:
             case EVENT:
@@ -175,6 +178,21 @@ public class Yawned {
             Task task = tasks.unmarkTask(taskNumber);
             storage.saveTasks(tasks.getTasks());
             return "As productive as me... unmarked:\n  " + task;
+        } catch (YawnedException exception) {
+            return exception.getMessage();
+        }
+    }
+
+    /**
+     * Finds tasks selected by a {@code find <keyword>} command and shows the results.
+     *
+     * @param command user command
+     * @return prompt message for the next command
+     */
+    private String findTaskMessage(String command) {
+        try {
+            ui.showMatchingTasks(tasks.findTasks(parser.parseFindKeyword(command)));
+            return "";
         } catch (YawnedException exception) {
             return exception.getMessage();
         }

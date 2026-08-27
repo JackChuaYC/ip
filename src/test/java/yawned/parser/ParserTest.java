@@ -77,6 +77,20 @@ class ParserTest {
                 "*Yawns* You need to tell me which number to delete.. like: delete 2");
     }
 
+    @Test
+    void parseFindKeyword_presentKeyword_returnsKeyword() throws YawnedException {
+        assertEquals("book", parser.parseFindKeyword("find book"));
+        assertEquals("project meeting", parser.parseFindKeyword("find project meeting"));
+    }
+
+    @Test
+    void parseFindKeyword_missingKeyword_throwsHelpfulException() {
+        YawnedException exception = assertThrows(YawnedException.class,
+                () -> parser.parseFindKeyword("find"));
+
+        assertEquals("*Yawns* You need to tell me what to find.. like: find book", exception.getMessage());
+    }
+
     private void assertYawnedException(CommandType commandType, String command, String expectedMessage) {
         YawnedException exception = assertThrows(YawnedException.class,
                 () -> parser.parseTask(commandType, command));

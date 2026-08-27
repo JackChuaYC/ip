@@ -11,6 +11,7 @@ public enum CommandType {
     MARK("mark", true),
     UNMARK("unmark", true),
     DELETE("delete", true),
+    FIND("find", true),
     BYE("bye", false),
     UNKNOWN("", false);
 

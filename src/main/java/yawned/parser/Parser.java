@@ -66,6 +66,21 @@ public class Parser {
         }
     }
 
+    /**
+     * Extracts the keyword from a {@code find <keyword>} command.
+     *
+     * @param command complete user command
+     * @return search keyword
+     * @throws YawnedException if no keyword was provided
+     */
+    public String parseFindKeyword(String command) throws YawnedException {
+        String keyword = command.substring(CommandType.FIND.getWord().length()).trim();
+        if (keyword.isEmpty()) {
+            throw new YawnedException("*Yawns* You need to tell me what to find.. like: find book");
+        }
+        return keyword;
+    }
+
     /** Returns the appropriate task-number validation message for a command. */
     private static String missingTaskNumberMessage(CommandType commandType) {
         return switch (commandType) {
