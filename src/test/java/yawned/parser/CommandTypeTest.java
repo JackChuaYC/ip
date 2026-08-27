@@ -10,6 +10,23 @@ import org.junit.jupiter.api.Test;
 class CommandTypeTest {
 
     @Test
+    void getWord_everyCommandType_returnsItsCommandWord() {
+        Map<CommandType, String> commandWords = Map.ofEntries(
+                Map.entry(CommandType.TODO, "todo"),
+                Map.entry(CommandType.DEADLINE, "deadline"),
+                Map.entry(CommandType.EVENT, "event"),
+                Map.entry(CommandType.LIST, "list"),
+                Map.entry(CommandType.MARK, "mark"),
+                Map.entry(CommandType.UNMARK, "unmark"),
+                Map.entry(CommandType.DELETE, "delete"),
+                Map.entry(CommandType.BYE, "bye"),
+                Map.entry(CommandType.UNKNOWN, ""));
+
+        commandWords.forEach((commandType, expectedWord) ->
+                assertEquals(expectedWord, commandType.getWord()));
+    }
+
+    @Test
     void fromInput_exactSupportedCommand_returnsMatchingType() {
         Map<String, CommandType> commands = Map.of(
                 "todo", CommandType.TODO,
