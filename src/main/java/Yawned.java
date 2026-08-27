@@ -21,13 +21,13 @@ public class Yawned {
                     userInput = ui.readCommand("");
                     break;
                 case MARK:
-                    userInput = ui.readCommand(markTask(listOfTasks, storage, userInput));
+                    userInput = ui.readCommand(markTask(listOfTasks, storage, parser, userInput));
                     break;
                 case UNMARK:
-                    userInput = ui.readCommand(unmarkTask(listOfTasks, storage, userInput));
+                    userInput = ui.readCommand(unmarkTask(listOfTasks, storage, parser, userInput));
                     break;
                 case DELETE:
-                    userInput = ui.readCommand(deleteTaskMessage(listOfTasks, storage, userInput));
+                    userInput = ui.readCommand(deleteTaskMessage(listOfTasks, storage, parser, userInput));
                     break;
                 case TODO:
                 case DEADLINE:
@@ -102,20 +102,21 @@ public class Yawned {
      * Deletes the task selected by a {@code delete <number>} command and formats the result.
      *
      * @param listOfTasks task list
+     * @param storage task storage
+     * @param parser command parser
      * @param command user command
      * @return deletion confirmation or validation message
      */
-    private static String deleteTaskMessage(TaskList listOfTasks, Storage storage, String command) {
-        String taskNumberText = command.substring(CommandType.DELETE.getWord().length()).trim();
+    private static String deleteTaskMessage(TaskList listOfTasks, Storage storage, Parser parser, String command) {
         try {
-            int taskNumber = Integer.parseInt(taskNumberText);
+            int taskNumber = parser.parseTaskNumber(CommandType.DELETE, command);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
             Task deletedTask = deleteTask(listOfTasks, storage, taskNumber);
             return deletedTaskMessage(deletedTask, listOfTasks.size());
-        } catch (NumberFormatException exception) {
-            return "*Yawns* You need to tell me which number to delete.. like: delete 2";
+        } catch (YawnedException exception) {
+            return exception.getMessage();
         }
     }
 
@@ -123,13 +124,14 @@ public class Yawned {
      * Marks the task selected by a {@code mark <number>} command as done.
      *
      * @param listOfTasks task list
+     * @param storage task storage
+     * @param parser command parser
      * @param command user command
      * @return result message for the user
      */
-    private static String markTask(TaskList listOfTasks, Storage storage, String command) {
-        String taskNumberText = command.substring(CommandType.MARK.getWord().length()).trim();
+    private static String markTask(TaskList listOfTasks, Storage storage, Parser parser, String command) {
         try {
-            int taskNumber = Integer.parseInt(taskNumberText);
+            int taskNumber = parser.parseTaskNumber(CommandType.MARK, command);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
@@ -137,8 +139,8 @@ public class Yawned {
             task.markAsDone();
             storage.saveTasks(listOfTasks.getTasks());
             return "finally, that's done:\n  " + task;
-        } catch (NumberFormatException exception) {
-            return "*Yawns* You need to tell me which number to mark.. like: mark 2";
+        } catch (YawnedException exception) {
+            return exception.getMessage();
         }
     }
 
@@ -146,13 +148,14 @@ public class Yawned {
      * Marks the task selected by an {@code unmark <number>} command as not done.
      *
      * @param listOfTasks task list
+     * @param storage task storage
+     * @param parser command parser
      * @param command user command
      * @return result message for the user
      */
-    private static String unmarkTask(TaskList listOfTasks, Storage storage, String command) {
-        String taskNumberText = command.substring(CommandType.UNMARK.getWord().length()).trim();
+    private static String unmarkTask(TaskList listOfTasks, Storage storage, Parser parser, String command) {
         try {
-            int taskNumber = Integer.parseInt(taskNumberText);
+            int taskNumber = parser.parseTaskNumber(CommandType.UNMARK, command);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
@@ -160,8 +163,8 @@ public class Yawned {
             task.markAsUndone();
             storage.saveTasks(listOfTasks.getTasks());
             return "As productive as me... unmarked:\n  " + task;
-        } catch (NumberFormatException exception) {
-            return "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
+        } catch (YawnedException exception) {
+            return exception.getMessage();
         }
     }
 }

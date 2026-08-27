@@ -190,3 +190,92 @@ Bye.. I am going back to sleep.
 ____________________________________________________________
 
 ```
+
+## Test case: Reject invalid task numbers without changing tasks
+
+**Aim:** Verify that malformed and out-of-range task-number commands are rejected, while later valid mark, unmark, and delete commands still change the intended task.
+
+**Initial storage:** None
+
+**Inputs:**
+
+```text
+todo read book
+mark
+mark 1
+unmark nope
+unmark 1
+delete 0
+delete 1
+list
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+
+========================
+         YAWNED
+   Your sleepy chatbot
+========================
+
+*Yawns..* You woke me up...
+What do you want?
+
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+*Yawns* You need to tell me which number to mark.. like: mark 2
+____________________________________________________________
+
+____________________________________________________________
+
+finally, that's done:
+  [T][X] read book
+____________________________________________________________
+
+____________________________________________________________
+
+*Yawns* You need to tell me which number to unmark.. like: unmark 2
+____________________________________________________________
+
+____________________________________________________________
+
+As productive as me... unmarked:
+  [T][ ] read book
+____________________________________________________________
+
+____________________________________________________________
+
+you... don't have that task number???
+____________________________________________________________
+
+____________________________________________________________
+
+fine. I removed this task:
+  [T][ ] read book
+Now you have 0 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+No Tasks!
+
+____________________________________________________________
+
+____________________________________________________________
+
+Bye.. I am going back to sleep.
+____________________________________________________________
+
+```

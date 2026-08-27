@@ -40,6 +40,33 @@ public class Parser {
         };
     }
 
+    /**
+     * Extracts a one-based task number from a task-selection command.
+     *
+     * @param commandType type of task-selection command
+     * @param command complete user command
+     * @return parsed task number; range validation is performed by the task list caller
+     * @throws YawnedException if no whole-number task number was provided
+     */
+    public int parseTaskNumber(CommandType commandType, String command) throws YawnedException {
+        String taskNumberText = command.substring(commandType.getWord().length()).trim();
+        try {
+            return Integer.parseInt(taskNumberText);
+        } catch (NumberFormatException exception) {
+            throw new YawnedException(missingTaskNumberMessage(commandType));
+        }
+    }
+
+    /** Returns the appropriate task-number validation message for a command. */
+    private static String missingTaskNumberMessage(CommandType commandType) {
+        return switch (commandType) {
+        case DELETE -> "*Yawns* You need to tell me which number to delete.. like: delete 2";
+        case MARK -> "*Yawns* You need to tell me which number to mark.. like: mark 2";
+        case UNMARK -> "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
+        default -> throw new IllegalArgumentException("Cannot select a task from command type: " + commandType);
+        };
+    }
+
     /** Creates a to-do from its command details. */
     private static ToDo createToDo(String details) throws YawnedException {
         if (details.isEmpty()) {
