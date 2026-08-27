@@ -7,15 +7,22 @@ public class Task {
     private final String description;
     private TaskStatus status;
 
+    /**
+     * Creates an incomplete task with the given description.
+     *
+     * @param description Task description.
+     */
     public Task(String description) {
         this.description = description;
         this.status = TaskStatus.NOT_DONE;
     }
 
+    /** Marks this task as complete. */
     public void markAsDone() {
         this.status = TaskStatus.DONE;
     }
 
+    /** Marks this task as incomplete. */
     public void markAsUndone() {
         this.status = TaskStatus.NOT_DONE;
     }
@@ -23,7 +30,7 @@ public class Task {
     /**
      * Returns this task's description for storage.
      *
-     * @return task description
+     * @return Task description.
      */
     public String getDescription() {
         return description;
@@ -32,7 +39,7 @@ public class Task {
     /**
      * Returns this task's completion status for storage.
      *
-     * @return current completion status
+     * @return Current completion status.
      */
     public TaskStatus getStatus() {
         return status;
@@ -41,7 +48,7 @@ public class Task {
     /**
      * Returns the task description together with its completion status.
      *
-     * @return task status and description
+     * @return Task status and description.
      */
     @Override
     public String toString() {

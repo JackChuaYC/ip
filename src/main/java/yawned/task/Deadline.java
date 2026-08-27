@@ -15,7 +15,8 @@ public class Deadline extends Task {
     /**
      * Creates a deadline task with the given description and a deadline.
      *
-     * @param description description of the task
+     * @param description Description of the task.
+     * @param endDate Deadline time.
      */
     public Deadline(String description, LocalDateTime endDate) {
         super(description);
@@ -25,7 +26,7 @@ public class Deadline extends Task {
     /**
      * Returns the deadline time for storage.
      *
-     * @return deadline time
+     * @return Deadline time.
      */
     public LocalDateTime getEndDate() {
         return endDate;

@@ -18,7 +18,7 @@ public enum TaskStatus {
     /**
      * Returns the icon used to display this status.
      *
-     * @return status icon
+     * @return Status icon.
      */
     public String getIcon() {
         return icon;
@@ -27,7 +27,7 @@ public enum TaskStatus {
     /**
      * Returns the value used to save this status to disk.
      *
-     * @return {@code "1"} for done tasks, otherwise {@code "0"}
+     * @return {@code "1"} for done tasks, otherwise {@code "0"}.
      */
     public String getStorageValue() {
         return storageValue;

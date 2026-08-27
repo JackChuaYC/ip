@@ -22,8 +22,8 @@ public class Parser {
     /**
      * Identifies the type of user command.
      *
-     * @param userInput complete user command
-     * @return matching command type, or {@link CommandType#UNKNOWN}
+     * @param userInput Complete user command.
+     * @return Matching command type, or {@link CommandType#UNKNOWN}.
      */
     public CommandType parseCommandType(String userInput) {
         return CommandType.fromInput(userInput);
@@ -32,10 +32,11 @@ public class Parser {
     /**
      * Creates the task described by a task-creation command.
      *
-     * @param commandType type of task to create
-     * @param command complete user command
-     * @return the created task
-     * @throws YawnedException if the command is incomplete or unknown
+     * @param commandType Type of task to create.
+     * @param command Complete user command.
+     * @return The created task.
+     * @throws YawnedException If the command is incomplete or unknown.
+     * @throws IllegalArgumentException If {@code commandType} is not a task-creation command.
      */
     public Task parseTask(CommandType commandType, String command) throws YawnedException {
         String details = command.substring(commandType.getWord().length()).trim();
@@ -51,10 +52,10 @@ public class Parser {
     /**
      * Extracts a one-based task number from a task-selection command.
      *
-     * @param commandType type of task-selection command
-     * @param command complete user command
-     * @return parsed task number; range validation is performed by the task list caller
-     * @throws YawnedException if no whole-number task number was provided
+     * @param commandType Type of task-selection command.
+     * @param command Complete user command.
+     * @return Parsed task number; range validation is performed by the task list caller.
+     * @throws YawnedException If no whole-number task number was provided.
      */
     public int parseTaskNumber(CommandType commandType, String command) throws YawnedException {
         String taskNumberText = command.substring(commandType.getWord().length()).trim();
@@ -132,9 +133,9 @@ public class Parser {
     /**
      * Parses a date and time written in {@code yyyy-MM-dd HHmm} format.
      *
-     * @param dateTimeText date and time text to parse
-     * @return parsed date and time
-     * @throws YawnedException if the input is not a valid date and time
+     * @param dateTimeText Date and time text to parse.
+     * @return Parsed date and time.
+     * @throws YawnedException If the input is not a valid date and time.
      */
     private static LocalDateTime parseDateTime(String dateTimeText) throws YawnedException {
         try {

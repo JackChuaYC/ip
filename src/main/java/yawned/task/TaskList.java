@@ -20,7 +20,7 @@ public class TaskList {
     /**
      * Creates a task list containing the given tasks.
      *
-     * @param tasks tasks to add to the new list
+     * @param tasks Tasks to add to the new list.
      */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
@@ -29,7 +29,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task Task to add.
      */
     public void addTask(Task task) {
         tasks.add(task);
@@ -38,8 +38,9 @@ public class TaskList {
     /**
      * Removes the task with the given one-based number.
      *
-     * @param taskNumber one-based task number
-     * @return removed task
+     * @param taskNumber One-based task number.
+     * @return Removed task.
+     * @throws IndexOutOfBoundsException If {@code taskNumber} does not identify a task in this list.
      */
     public Task deleteTask(int taskNumber) {
         return tasks.remove(taskNumber - 1);
@@ -48,8 +49,9 @@ public class TaskList {
     /**
      * Returns the task with the given one-based number.
      *
-     * @param taskNumber one-based task number
-     * @return selected task
+     * @param taskNumber One-based task number.
+     * @return Selected task.
+     * @throws IndexOutOfBoundsException If {@code taskNumber} does not identify a task in this list.
      */
     public Task getTask(int taskNumber) {
         return tasks.get(taskNumber - 1);
@@ -58,8 +60,8 @@ public class TaskList {
     /**
      * Marks the task with the given one-based number as done.
      *
-     * @param taskNumber one-based task number
-     * @return task after its status has been updated
+     * @param taskNumber One-based task number.
+     * @return Task after its status has been updated.
      */
     public Task markTask(int taskNumber) {
         Task task = getTask(taskNumber);
@@ -70,8 +72,8 @@ public class TaskList {
     /**
      * Marks the task with the given one-based number as not done.
      *
-     * @param taskNumber one-based task number
-     * @return task after its status has been updated
+     * @param taskNumber One-based task number.
+     * @return Task after its status has been updated.
      */
     public Task unmarkTask(int taskNumber) {
         Task task = getTask(taskNumber);
@@ -82,7 +84,7 @@ public class TaskList {
     /**
      * Returns the number of tasks in the list.
      *
-     * @return task count
+     * @return Task count.
      */
     public int size() {
         return tasks.size();
@@ -91,7 +93,7 @@ public class TaskList {
     /**
      * Returns whether the list has no tasks.
      *
-     * @return true if the list is empty
+     * @return True if the list is empty.
      */
     public boolean isEmpty() {
         return tasks.isEmpty();
@@ -100,7 +102,7 @@ public class TaskList {
     /**
      * Returns a read-only view of the tasks for display and storage.
      *
-     * @return read-only tasks
+     * @return Read-only tasks.
      */
     public List<Task> getTasks() {
         return Collections.unmodifiableList(tasks);

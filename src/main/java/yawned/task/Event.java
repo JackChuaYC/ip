@@ -16,9 +16,9 @@ public class Event extends Task {
     /**
      * Creates an event with the given description, start time, and end time.
      *
-     * @param description description of the event
-     * @param startDate event start time
-     * @param endDate event end time
+     * @param description Description of the event.
+     * @param startDate Event start time.
+     * @param endDate Event end time.
      */
     public Event(String description, LocalDateTime startDate, LocalDateTime endDate) {
         super(description);
@@ -29,7 +29,7 @@ public class Event extends Task {
     /**
      * Returns the event start time for storage.
      *
-     * @return event start time
+     * @return Event start time.
      */
     public LocalDateTime getStartDate() {
         return startDate;
@@ -38,7 +38,7 @@ public class Event extends Task {
     /**
      * Returns the event end time for storage.
      *
-     * @return event end time
+     * @return Event end time.
      */
     public LocalDateTime getEndDate() {
         return endDate;
@@ -53,8 +53,8 @@ public class Event extends Task {
     /**
      * Formats a date for display in the task list.
      *
-     * @param date date to format
-     * @return formatted date
+     * @param date Date to format.
+     * @return Formatted date.
      */
     private static String formatDate(LocalDateTime date) {
         return date.format(DISPLAY_DATE_TIME_FORMAT).toUpperCase(Locale.ENGLISH);

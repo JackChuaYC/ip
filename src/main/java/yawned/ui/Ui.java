@@ -20,7 +20,7 @@ public class Ui {
     /**
      * Creates a user interface that reads commands from the given scanner.
      *
-     * @param scanner source of user input
+     * @param scanner Source of user input.
      */
     public Ui(Scanner scanner) {
         this.scanner = scanner;
@@ -37,8 +37,8 @@ public class Ui {
     /**
      * Shows a message and reads the next command from the user.
      *
-     * @param message message to display before accepting input
-     * @return the user's command
+     * @param message Message to display before accepting input.
+     * @return The user's command.
      */
     public String readCommand(String message) {
         System.out.println(message);
@@ -49,7 +49,7 @@ public class Ui {
     /**
      * Shows a message without requesting input.
      *
-     * @param message message to display
+     * @param message Message to display.
      */
     public void showMessage(String message) {
         System.out.println(message);
@@ -58,7 +58,7 @@ public class Ui {
     /**
      * Shows the current task list.
      *
-     * @param taskList tasks to display
+     * @param taskList Tasks to display.
      */
     public void showTaskList(TaskList taskList) {
         if (taskList.isEmpty()) {
