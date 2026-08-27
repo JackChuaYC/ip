@@ -23,7 +23,7 @@ public class Yawned {
     /**
      * Creates the chatbot and loads its saved tasks.
      *
-     * @param saveFile relative path of the task storage file
+     * @param saveFile Relative path of the task storage file.
      */
     public Yawned(Path saveFile) {
         ui = new Ui(new Scanner(System.in));
@@ -78,7 +78,7 @@ public class Yawned {
     /**
      * Adds a task and saves the changed task list.
      *
-     * @param task new task to add
+     * @param task New task to add.
      */
     private void addTask(Task task) {
         tasks.addTask(task);
@@ -88,8 +88,8 @@ public class Yawned {
     /**
      * Removes a task and saves the changed task list.
      *
-     * @param taskNumber one-based number of the task to remove
-     * @return removed task
+     * @param taskNumber One-based number of the task to remove.
+     * @return Removed task.
      */
     private Task deleteTask(int taskNumber) {
         Task deletedTask = tasks.deleteTask(taskNumber);
@@ -100,9 +100,9 @@ public class Yawned {
     /**
      * Formats the confirmation shown after a task is successfully added.
      *
-     * @param task added task
-     * @param taskCounter updated number of tasks
-     * @return confirmation message
+     * @param task Added task.
+     * @param taskCounter Updated number of tasks.
+     * @return Confirmation message.
      */
     private static String addedTaskMessage(Task task, int taskCounter) {
         return "Got it. I've added this task:\n  " + task
@@ -112,9 +112,9 @@ public class Yawned {
     /**
      * Formats the confirmation shown after a task is deleted.
      *
-     * @param task deleted task
-     * @param taskCounter updated number of tasks
-     * @return confirmation message
+     * @param task Deleted task.
+     * @param taskCounter Updated number of tasks.
+     * @return Confirmation message.
      */
     private static String deletedTaskMessage(Task task, int taskCounter) {
         return "fine. I removed this task:\n  " + task
@@ -124,8 +124,8 @@ public class Yawned {
     /**
      * Deletes the task selected by a {@code delete <number>} command and formats the result.
      *
-     * @param command user command
-     * @return deletion confirmation or validation message
+     * @param command User command.
+     * @return Deletion confirmation or validation message.
      */
     private String deleteTaskMessage(String command) {
         try {
@@ -143,8 +143,8 @@ public class Yawned {
     /**
      * Marks the task selected by a {@code mark <number>} command as done.
      *
-     * @param command user command
-     * @return result message for the user
+     * @param command User command.
+     * @return Result message for the user.
      */
     private String markTask(String command) {
         try {
@@ -163,8 +163,8 @@ public class Yawned {
     /**
      * Marks the task selected by an {@code unmark <number>} command as not done.
      *
-     * @param command user command
-     * @return result message for the user
+     * @param command User command.
+     * @return Result message for the user.
      */
     private String unmarkTask(String command) {
         try {

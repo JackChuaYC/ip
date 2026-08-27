@@ -25,7 +25,7 @@ public enum CommandType {
     /**
      * Returns the command word represented by this type.
      *
-     * @return command word
+     * @return Command word.
      */
     public String getWord() {
         return word;
@@ -34,8 +34,8 @@ public enum CommandType {
     /**
      * Identifies the command type represented by the user's full input.
      *
-     * @param input full user input
-     * @return matching command type, or {@link #UNKNOWN}
+     * @param input Full user input.
+     * @return Matching command type, or {@link #UNKNOWN}.
      */
     public static CommandType fromInput(String input) {
         for (CommandType commandType : values()) {

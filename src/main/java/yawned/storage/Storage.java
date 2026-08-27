@@ -25,7 +25,7 @@ public class Storage {
     /**
      * Creates storage that uses the given file path.
      *
-     * @param saveFile path of the task storage file
+     * @param saveFile Path of the task storage file.
      */
     public Storage(Path saveFile) {
         this.saveFile = saveFile;
@@ -34,7 +34,7 @@ public class Storage {
     /**
      * Saves all tasks to disk, replacing the previous saved list.
      *
-     * @param tasks tasks to save
+     * @param tasks Tasks to save.
      */
     public void saveTasks(List<Task> tasks) {
         Path temporaryFile = null;
@@ -63,7 +63,7 @@ public class Storage {
     /**
      * Loads all valid tasks from disk.
      *
-     * @return loaded tasks, or an empty list if no storage file exists
+     * @return Loaded tasks, or an empty list if no storage file exists.
      */
     public List<Task> loadTasks() {
         List<Task> tasks = new ArrayList<>();
@@ -103,8 +103,8 @@ public class Storage {
     /**
      * Recreates a task from one serialized storage line.
      *
-     * @param storedTask serialized task data
-     * @return recreated task
+     * @param storedTask Serialized task data.
+     * @return Recreated task.
      */
     private static Task createTaskFromStorage(String storedTask) {
         List<String> fields = splitStorageFields(storedTask);
@@ -125,8 +125,8 @@ public class Storage {
     /**
      * Splits one storage line while restoring escaped delimiters.
      *
-     * @param storedTask serialized task data
-     * @return extracted storage fields
+     * @param storedTask Serialized task data.
+     * @return Extracted storage fields.
      */
     private static List<String> splitStorageFields(String storedTask) {
         List<String> fields = new ArrayList<>();
@@ -155,7 +155,7 @@ public class Storage {
     /**
      * Validates the field count and required values for a serialized task.
      *
-     * @param fields extracted storage fields
+     * @param fields Extracted storage fields.
      */
     private static void validateStorageFields(List<String> fields) {
         if (fields.size() < 2 || (!fields.get(1).equals("0") && !fields.get(1).equals("1"))) {
@@ -180,8 +180,8 @@ public class Storage {
     /**
      * Formats a task as one storage line.
      *
-     * @param task task to format
-     * @return serialized task data
+     * @param task Task to format.
+     * @return Serialized task data.
      */
     private static String formatTaskForStorage(Task task) {
         String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
@@ -197,8 +197,8 @@ public class Storage {
     /**
      * Escapes separators in one value written to storage.
      *
-     * @param field field value to escape
-     * @return escaped value
+     * @param field Field value to escape.
+     * @return Escaped value.
      */
     private static String escapeStorageField(String field) {
         return field.replace("\\", "\\\\").replace("|", "\\|");
