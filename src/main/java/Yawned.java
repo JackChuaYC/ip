@@ -26,7 +26,7 @@ public class Yawned {
     public static void main(String[] args) {
         Ui ui = new Ui(new Scanner(System.in));
         ui.showWelcome();
-        List<Task> listOfTasks = loadTaskList();
+        TaskList listOfTasks = new TaskList(loadTaskList());
         String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
         ui.showBreakLine();
         CommandType commandType = CommandType.fromInput(userInput);
@@ -72,9 +72,9 @@ public class Yawned {
      * @param listOfTasks task list
      * @param task new task to be added
      */
-    private static void addTask(List<Task> listOfTasks, Task task) {
-        listOfTasks.add(task);
-        saveTaskList(listOfTasks);
+    private static void addTask(TaskList listOfTasks, Task task) {
+        listOfTasks.addTask(task);
+        saveTaskList(listOfTasks.getTasks());
     }
 
     /**
@@ -84,9 +84,9 @@ public class Yawned {
      * @param taskNumber one-based number of the task to remove
      * @return removed task
      */
-    private static Task deleteTask(List<Task> listOfTasks, int taskNumber) {
-        Task deletedTask = listOfTasks.remove(taskNumber - 1);
-        saveTaskList(listOfTasks);
+    private static Task deleteTask(TaskList listOfTasks, int taskNumber) {
+        Task deletedTask = listOfTasks.deleteTask(taskNumber);
+        saveTaskList(listOfTasks.getTasks());
         return deletedTask;
     }
 
@@ -377,7 +377,7 @@ public class Yawned {
      * @param command user command
      * @return deletion confirmation or validation message
      */
-    private static String deleteTaskMessage(List<Task> listOfTasks, String command) {
+    private static String deleteTaskMessage(TaskList listOfTasks, String command) {
         String taskNumberText = command.substring(CommandType.DELETE.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
@@ -398,16 +398,16 @@ public class Yawned {
      * @param command user command
      * @return result message for the user
      */
-    private static String markTask(List<Task> listOfTasks, String command) {
+    private static String markTask(TaskList listOfTasks, String command) {
         String taskNumberText = command.substring(CommandType.MARK.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task task = listOfTasks.get(taskNumber - 1);
+            Task task = listOfTasks.getTask(taskNumber);
             task.markAsDone();
-            saveTaskList(listOfTasks);
+            saveTaskList(listOfTasks.getTasks());
             return "finally, that's done:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to mark.. like: mark 2";
@@ -421,16 +421,16 @@ public class Yawned {
      * @param command user command
      * @return result message for the user
      */
-    private static String unmarkTask(List<Task> listOfTasks, String command) {
+    private static String unmarkTask(TaskList listOfTasks, String command) {
         String taskNumberText = command.substring(CommandType.UNMARK.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task task = listOfTasks.get(taskNumber - 1);
+            Task task = listOfTasks.getTask(taskNumber);
             task.markAsUndone();
-            saveTaskList(listOfTasks);
+            saveTaskList(listOfTasks.getTasks());
             return "As productive as me... unmarked:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to unmark.. like: unmark 2";

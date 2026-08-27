@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -55,16 +54,16 @@ public class Ui {
     /**
      * Shows the current task list.
      *
-     * @param listOfTasks tasks to display
+     * @param taskList tasks to display
      */
-    public void showTaskList(List<Task> listOfTasks) {
-        if (listOfTasks.isEmpty()) {
+    public void showTaskList(TaskList taskList) {
+        if (taskList.isEmpty()) {
             System.out.println("No Tasks!");
             return;
         }
         System.out.println("Here you go, the tasks in your list:");
-        for (int i = 0; i < listOfTasks.size(); i++) {
-            System.out.printf("%d.%s%n", i + 1, listOfTasks.get(i));
+        for (int i = 1; i <= taskList.size(); i++) {
+            System.out.printf("%d.%s%n", i, taskList.getTask(i));
         }
     }
 
