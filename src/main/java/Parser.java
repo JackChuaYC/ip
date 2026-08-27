@@ -12,7 +12,7 @@ public class Parser {
             .withResolverStyle(ResolverStyle.STRICT);
 
     /**
-     * Identifies the type of a user command.
+     * Identifies the type of user command.
      *
      * @param userInput complete user command
      * @return matching command type, or {@link CommandType#UNKNOWN}
