@@ -1,5 +1,15 @@
+package yawned;
+
 import java.nio.file.Path;
 import java.util.Scanner;
+
+import yawned.exception.YawnedException;
+import yawned.parser.CommandType;
+import yawned.parser.Parser;
+import yawned.storage.Storage;
+import yawned.task.Task;
+import yawned.task.TaskList;
+import yawned.ui.Ui;
 
 /**
  * Coordinates the UI, command parser, task list, and storage for Yawned.

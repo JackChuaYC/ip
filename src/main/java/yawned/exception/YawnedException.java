@@ -1,3 +1,5 @@
+package yawned.exception;
+
 /**
  * Represents an error caused by an invalid Yawned command.
  */

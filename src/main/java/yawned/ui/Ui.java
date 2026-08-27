@@ -1,4 +1,8 @@
+package yawned.ui;
+
 import java.util.Scanner;
+
+import yawned.task.TaskList;
 
 /**
  * Handles all console interaction with the user.
