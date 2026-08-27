@@ -80,14 +80,17 @@ public class Parser {
         int byIndex = details.indexOf(" /by");
         if (details.isEmpty() || details.startsWith("/by")) {
             throw new YawnedException(
-                    "I just want to sleep... you forgot to provide a description for the deadline");
+                    "I just want to sleep... you forgot to provide a description for the deadline. "
+                            + "Use: deadline <description> /by yyyy-MM-dd HHmm");
         }
         if (byIndex < 0) {
-            throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
+            throw new YawnedException(
+                    "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
         }
         String endDate = details.substring(byIndex + " /by".length()).trim();
         if (endDate.isEmpty()) {
-            throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
+            throw new YawnedException(
+                    "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
         }
         return new Deadline(details.substring(0, byIndex).trim(), parseDateTime(endDate));
     }
@@ -97,19 +100,23 @@ public class Parser {
         int fromIndex = details.indexOf(" /from");
         if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
             throw new YawnedException(
-                    "I just want to sleep... you forgot to provide a description for the event");
+                    "I just want to sleep... you forgot to provide a description for the event. "
+                            + "Use: event <description> /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm");
         }
         if (fromIndex < 0) {
-            throw new YawnedException("Excuse me, An event must include /from and /to times.");
+            throw new YawnedException(
+                    "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
         }
         int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
         if (toIndex < 0) {
-            throw new YawnedException("Excuse me, An event must include /from and /to times.");
+            throw new YawnedException(
+                    "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
         }
         String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
         String toDate = details.substring(toIndex + " /to".length()).trim();
         if (fromDate.isEmpty() || toDate.isEmpty()) {
-            throw new YawnedException("Excuse me, An event must include /from and /to times.");
+            throw new YawnedException(
+                    "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
         }
         return new Event(details.substring(0, fromIndex).trim(), parseDateTime(fromDate), parseDateTime(toDate));
     }
