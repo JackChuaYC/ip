@@ -2,7 +2,7 @@
 
 ## Run command
 
-Compile all files in `src/main/java` with Java 25, then run `Yawned` with the compiled classes on the classpath. Run each test case in a fresh console session.
+Compile all files in `src/main/java` with Java 25, then run `yawned.Yawned` with the compiled classes on the classpath. Run each test case in a fresh console session.
 
 Before each case, set `data/Yawned.txt` to the stated **Initial storage** value. `None` means the file must not exist; restore any pre-existing file after the test run.
 
