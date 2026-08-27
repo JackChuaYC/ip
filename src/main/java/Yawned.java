@@ -1,8 +1,3 @@
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.ResolverStyle;
 import java.nio.file.Path;
 import java.util.Scanner;
 
@@ -10,18 +5,15 @@ import java.util.Scanner;
  * Entry point for the Yawned chatbot application.
  */
 public class Yawned {
-    private static final DateTimeFormatter INPUT_DATE_TIME_FORMAT = DateTimeFormatter
-            .ofPattern("uuuu-MM-dd HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
-
     public static void main(String[] args) {
         Ui ui = new Ui(new Scanner(System.in));
+        Parser parser = new Parser();
         ui.showWelcome();
         Storage storage = new Storage(Path.of("data", "Yawned.txt"));
         TaskList listOfTasks = new TaskList(storage.loadTasks());
         String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
         ui.showBreakLine();
-        CommandType commandType = CommandType.fromInput(userInput);
+        CommandType commandType = parser.parseCommandType(userInput);
         while (commandType != CommandType.BYE) {
             switch (commandType) {
                 case LIST:
@@ -42,7 +34,7 @@ public class Yawned {
                 case EVENT:
                 case UNKNOWN:
                     try {
-                        Task task = createTask(commandType, userInput);
+                        Task task = parser.parseTask(commandType, userInput);
                         addTask(listOfTasks, storage, task);
                         userInput = ui.readCommand(addedTaskMessage(task, listOfTasks.size()));
                     } catch (YawnedException exception) {
@@ -53,7 +45,7 @@ public class Yawned {
                     throw new IllegalStateException("Unexpected command type: " + commandType);
             }
             ui.showBreakLine();
-            commandType = CommandType.fromInput(userInput);
+            commandType = parser.parseCommandType(userInput);
         }
         ui.showMessage("Bye.. I am going back to sleep.");
         ui.showBreakLine();
@@ -80,91 +72,6 @@ public class Yawned {
         Task deletedTask = listOfTasks.deleteTask(taskNumber);
         storage.saveTasks(listOfTasks.getTasks());
         return deletedTask;
-    }
-
-    /**
-     * Parses a date written in ISO {@code yyyy-MM-dd} format.
-     *
-     * @param dateText date text to parse
-     * @return parsed date
-     * @throws YawnedException if the date is not a valid {@code yyyy-MM-dd} date
-     */
-    private static LocalDate parseDate(String dateText) throws YawnedException {
-        try {
-            return LocalDate.parse(dateText);
-        } catch (DateTimeParseException exception) {
-            throw new YawnedException("Please use a valid date in yyyy-MM-dd format.");
-        }
-    }
-
-    /**
-     * Parses a date and time written in {@code yyyy-MM-dd HHmm} format.
-     *
-     * @param dateTimeText date and time text to parse
-     * @return parsed date and time
-     * @throws YawnedException if the input is not a valid date and time
-     */
-    private static LocalDateTime parseDateTime(String dateTimeText) throws YawnedException {
-        try {
-            return LocalDateTime.parse(dateTimeText, INPUT_DATE_TIME_FORMAT);
-        } catch (DateTimeParseException exception) {
-            throw new YawnedException("Please use a valid date and time in yyyy-MM-dd HHmm format.");
-        }
-    }
-
-    /**
-     * Creates the task described by a task-creation command.
-     *
-     * @param command user command
-     * @return the created task
-     * @throws YawnedException if the command is incomplete or unknown
-     */
-    private static Task createTask(CommandType commandType, String command) throws YawnedException {
-        String details = command.substring(commandType.getWord().length()).trim();
-        switch (commandType) {
-            case TODO:
-                if (details.isEmpty()) {
-                    throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
-                }
-                return new ToDo(details);
-            case DEADLINE:
-                int byIndex = details.indexOf(" /by");
-                if (details.isEmpty() || details.startsWith("/by")) {
-                    throw new YawnedException(
-                            "I just want to sleep... you forgot to provide a description for the deadline");
-                }
-                if (byIndex < 0) {
-                    throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
-                }
-                String endDate = details.substring(byIndex + " /by".length()).trim();
-                if (endDate.isEmpty()) {
-                    throw new YawnedException("you woke me up for this? A deadline must include a /by time.");
-                }
-                return new Deadline(details.substring(0, byIndex).trim(), parseDateTime(endDate));
-            case EVENT:
-                int fromIndex = details.indexOf(" /from");
-                if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
-                    throw new YawnedException(
-                            "I just want to sleep... you forgot to provide a description for the event");
-                }
-                if (fromIndex < 0) {
-                    throw new YawnedException("Excuse me, An event must include /from and /to times.");
-                }
-                int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
-                if (toIndex < 0) {
-                    throw new YawnedException("Excuse me, An event must include /from and /to times.");
-                }
-                String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
-                String toDate = details.substring(toIndex + " /to".length()).trim();
-                if (fromDate.isEmpty() || toDate.isEmpty()) {
-                    throw new YawnedException("Excuse me, An event must include /from and /to times.");
-                }
-                return new Event(details.substring(0, fromIndex).trim(), parseDateTime(fromDate), parseDateTime(toDate));
-            case UNKNOWN:
-                throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
-            default:
-                throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
-        }
     }
 
     /**
