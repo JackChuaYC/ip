@@ -54,6 +54,30 @@ public class TaskList {
     }
 
     /**
+     * Marks the task with the given one-based number as done.
+     *
+     * @param taskNumber one-based task number
+     * @return task after its status has been updated
+     */
+    public Task markTask(int taskNumber) {
+        Task task = getTask(taskNumber);
+        task.markAsDone();
+        return task;
+    }
+
+    /**
+     * Marks the task with the given one-based number as not done.
+     *
+     * @param taskNumber one-based task number
+     * @return task after its status has been updated
+     */
+    public Task unmarkTask(int taskNumber) {
+        Task task = getTask(taskNumber);
+        task.markAsUndone();
+        return task;
+    }
+
+    /**
      * Returns the number of tasks in the list.
      *
      * @return task count

@@ -135,8 +135,7 @@ public class Yawned {
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task task = listOfTasks.getTask(taskNumber);
-            task.markAsDone();
+            Task task = listOfTasks.markTask(taskNumber);
             storage.saveTasks(listOfTasks.getTasks());
             return "finally, that's done:\n  " + task;
         } catch (YawnedException exception) {
@@ -159,8 +158,7 @@ public class Yawned {
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task task = listOfTasks.getTask(taskNumber);
-            task.markAsUndone();
+            Task task = listOfTasks.unmarkTask(taskNumber);
             storage.saveTasks(listOfTasks.getTasks());
             return "As productive as me... unmarked:\n  " + task;
         } catch (YawnedException exception) {
