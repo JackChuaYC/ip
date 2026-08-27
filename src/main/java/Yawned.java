@@ -1,24 +1,15 @@
-import java.io.BufferedWriter;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
  * Entry point for the Yawned chatbot application.
  */
 public class Yawned {
-    private static final Path SAVE_FILE = Path.of("data", "Yawned.txt");
     private static final DateTimeFormatter INPUT_DATE_TIME_FORMAT = DateTimeFormatter
             .ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
@@ -26,7 +17,8 @@ public class Yawned {
     public static void main(String[] args) {
         Ui ui = new Ui(new Scanner(System.in));
         ui.showWelcome();
-        TaskList listOfTasks = new TaskList(loadTaskList());
+        Storage storage = new Storage(Path.of("data", "Yawned.txt"));
+        TaskList listOfTasks = new TaskList(storage.loadTasks());
         String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
         ui.showBreakLine();
         CommandType commandType = CommandType.fromInput(userInput);
@@ -37,13 +29,13 @@ public class Yawned {
                     userInput = ui.readCommand("");
                     break;
                 case MARK:
-                    userInput = ui.readCommand(markTask(listOfTasks, userInput));
+                    userInput = ui.readCommand(markTask(listOfTasks, storage, userInput));
                     break;
                 case UNMARK:
-                    userInput = ui.readCommand(unmarkTask(listOfTasks, userInput));
+                    userInput = ui.readCommand(unmarkTask(listOfTasks, storage, userInput));
                     break;
                 case DELETE:
-                    userInput = ui.readCommand(deleteTaskMessage(listOfTasks, userInput));
+                    userInput = ui.readCommand(deleteTaskMessage(listOfTasks, storage, userInput));
                     break;
                 case TODO:
                 case DEADLINE:
@@ -51,7 +43,7 @@ public class Yawned {
                 case UNKNOWN:
                     try {
                         Task task = createTask(commandType, userInput);
-                        addTask(listOfTasks, task);
+                        addTask(listOfTasks, storage, task);
                         userInput = ui.readCommand(addedTaskMessage(task, listOfTasks.size()));
                     } catch (YawnedException exception) {
                         userInput = ui.readCommand(exception.getMessage());
@@ -72,9 +64,9 @@ public class Yawned {
      * @param listOfTasks task list
      * @param task new task to be added
      */
-    private static void addTask(TaskList listOfTasks, Task task) {
+    private static void addTask(TaskList listOfTasks, Storage storage, Task task) {
         listOfTasks.addTask(task);
-        saveTaskList(listOfTasks.getTasks());
+        storage.saveTasks(listOfTasks.getTasks());
     }
 
     /**
@@ -84,181 +76,10 @@ public class Yawned {
      * @param taskNumber one-based number of the task to remove
      * @return removed task
      */
-    private static Task deleteTask(TaskList listOfTasks, int taskNumber) {
+    private static Task deleteTask(TaskList listOfTasks, Storage storage, int taskNumber) {
         Task deletedTask = listOfTasks.deleteTask(taskNumber);
-        saveTaskList(listOfTasks.getTasks());
+        storage.saveTasks(listOfTasks.getTasks());
         return deletedTask;
-    }
-
-    /**
-     * Saves all tasks to the application's storage file.
-     *
-     * <p>Each line contains a task type, status, description, and any time fields,
-     * separated by {@code |}.</p>
-     *
-     * @param listOfTasks task list to save
-     */
-    private static void saveTaskList(List<Task> listOfTasks) {
-        Path temporaryFile = null;
-        try {
-            Files.createDirectories(SAVE_FILE.getParent());
-            temporaryFile = SAVE_FILE.resolveSibling(SAVE_FILE.getFileName() + ".tmp");
-            try (BufferedWriter writer = Files.newBufferedWriter(temporaryFile)) {
-                for (Task task : listOfTasks) {
-                    writer.write(formatTaskForStorage(task));
-                    writer.newLine();
-                }
-            }
-            try {
-                Files.move(temporaryFile, SAVE_FILE, StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException exception) {
-                Files.move(temporaryFile, SAVE_FILE, StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException exception) {
-            System.out.println("OOPS!!! I couldn't save the task list.");
-        } finally {
-            if (temporaryFile != null) {
-                try {
-                    Files.deleteIfExists(temporaryFile);
-                } catch (IOException ignored) {
-                    // The temporary file will not affect the saved task list.
-                }
-            }
-        }
-    }
-
-    /**
-     * Loads the task list from the application's storage file.
-     *
-     * @return tasks stored on disk, or an empty list when no storage file exists
-     */
-    private static List<Task> loadTaskList() {
-        List<Task> listOfTasks = new ArrayList<>();
-        if (!Files.exists(SAVE_FILE)) {
-            return listOfTasks;
-        }
-
-        try {
-            List<String> storedTasks = Files.readAllLines(SAVE_FILE);
-            for (int i = 0; i < storedTasks.size(); i++) {
-                String storedTask = storedTasks.get(i);
-                if (!storedTask.isBlank()) {
-                    try {
-                        listOfTasks.add(createTaskFromStorage(storedTask));
-                    } catch (IllegalArgumentException | DateTimeException exception) {
-                        System.out.println("OOPS!!! I skipped invalid saved task on line " + (i + 1) + ".");
-                    }
-                }
-            }
-        } catch (IOException exception) {
-            System.out.println("OOPS!!! I couldn't read the saved task list. Starting with an empty list.");
-        }
-        return listOfTasks;
-    }
-
-    /**
-     * Recreates one task from a line in the storage file.
-     *
-     * @param storedTask storage line describing the task
-     * @return recreated task
-     */
-    private static Task createTaskFromStorage(String storedTask) {
-        List<String> fields = splitStorageFields(storedTask);
-        validateStorageFields(fields);
-        Task task = switch (fields.get(0)) {
-            case "T" -> new ToDo(fields.get(2));
-            case "D" -> new Deadline(fields.get(2), LocalDateTime.parse(fields.get(3)));
-            case "E" -> new Event(fields.get(2), LocalDateTime.parse(fields.get(3)),
-                    LocalDateTime.parse(fields.get(4)));
-            default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
-        };
-        if (fields.get(1).equals("1")) {
-            task.markAsDone();
-        }
-        return task;
-    }
-
-    /**
-     * Splits a storage line while restoring escaped pipes and backslashes.
-     *
-     * @param storedTask storage line to split
-     * @return fields contained in the storage line
-     */
-    private static List<String> splitStorageFields(String storedTask) {
-        List<String> fields = new ArrayList<>();
-        StringBuilder currentField = new StringBuilder();
-        for (int i = 0; i < storedTask.length(); i++) {
-            char character = storedTask.charAt(i);
-            if (character == '\\' && i + 1 < storedTask.length()) {
-                char nextCharacter = storedTask.charAt(i + 1);
-                if (nextCharacter == '|' || nextCharacter == '\\') {
-                    currentField.append(nextCharacter);
-                    i++;
-                    continue;
-                }
-            }
-            if (character == '|') {
-                fields.add(currentField.toString().trim());
-                currentField.setLength(0);
-            } else {
-                currentField.append(character);
-            }
-        }
-        fields.add(currentField.toString().trim());
-        return fields;
-    }
-
-    /**
-     * Checks that a storage line has the fields needed to recreate a task.
-     *
-     * @param fields fields extracted from the storage line
-     */
-    private static void validateStorageFields(List<String> fields) {
-        if (fields.size() < 2 || (!fields.get(1).equals("0") && !fields.get(1).equals("1"))) {
-            throw new IllegalArgumentException("Invalid task status.");
-        }
-        int expectedFieldCount = switch (fields.get(0)) {
-            case "T" -> 3;
-            case "D" -> 4;
-            case "E" -> 5;
-            default -> throw new IllegalArgumentException("Invalid task type.");
-        };
-        if (fields.size() != expectedFieldCount) {
-            throw new IllegalArgumentException("Invalid number of task fields.");
-        }
-        for (int i = 2; i < fields.size(); i++) {
-            if (fields.get(i).isBlank()) {
-                throw new IllegalArgumentException("Task fields cannot be empty.");
-            }
-        }
-    }
-
-    /**
-     * Formats one task as a line in the storage file.
-     *
-     * @param task task to format
-     * @return storage line for the task
-     */
-    private static String formatTaskForStorage(Task task) {
-        String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
-        return switch (task) {
-            case ToDo _ -> "T | " + commonFields;
-            case Deadline deadline -> "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate().toString());
-            case Event event -> "E | " + commonFields + " | " + escapeStorageField(event.getStartDate().toString())
-                    + " | " + escapeStorageField(event.getEndDate().toString());
-            default -> throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
-        };
-    }
-
-    /**
-     * Escapes separators in one storage field.
-     *
-     * @param field field value to escape
-     * @return escaped field value
-     */
-    private static String escapeStorageField(String field) {
-        return field.replace("\\", "\\\\").replace("|", "\\|");
     }
 
     /**
@@ -377,14 +198,14 @@ public class Yawned {
      * @param command user command
      * @return deletion confirmation or validation message
      */
-    private static String deleteTaskMessage(TaskList listOfTasks, String command) {
+    private static String deleteTaskMessage(TaskList listOfTasks, Storage storage, String command) {
         String taskNumberText = command.substring(CommandType.DELETE.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
             if (taskNumber < 1 || taskNumber > listOfTasks.size()) {
                 return "you... don't have that task number???";
             }
-            Task deletedTask = deleteTask(listOfTasks, taskNumber);
+            Task deletedTask = deleteTask(listOfTasks, storage, taskNumber);
             return deletedTaskMessage(deletedTask, listOfTasks.size());
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to delete.. like: delete 2";
@@ -398,7 +219,7 @@ public class Yawned {
      * @param command user command
      * @return result message for the user
      */
-    private static String markTask(TaskList listOfTasks, String command) {
+    private static String markTask(TaskList listOfTasks, Storage storage, String command) {
         String taskNumberText = command.substring(CommandType.MARK.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
@@ -407,7 +228,7 @@ public class Yawned {
             }
             Task task = listOfTasks.getTask(taskNumber);
             task.markAsDone();
-            saveTaskList(listOfTasks.getTasks());
+            storage.saveTasks(listOfTasks.getTasks());
             return "finally, that's done:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to mark.. like: mark 2";
@@ -421,7 +242,7 @@ public class Yawned {
      * @param command user command
      * @return result message for the user
      */
-    private static String unmarkTask(TaskList listOfTasks, String command) {
+    private static String unmarkTask(TaskList listOfTasks, Storage storage, String command) {
         String taskNumberText = command.substring(CommandType.UNMARK.getWord().length()).trim();
         try {
             int taskNumber = Integer.parseInt(taskNumberText);
@@ -430,7 +251,7 @@ public class Yawned {
             }
             Task task = listOfTasks.getTask(taskNumber);
             task.markAsUndone();
-            saveTaskList(listOfTasks.getTasks());
+            storage.saveTasks(listOfTasks.getTasks());
             return "As productive as me... unmarked:\n  " + task;
         } catch (NumberFormatException exception) {
             return "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
