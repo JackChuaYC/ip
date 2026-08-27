@@ -1,3 +1,5 @@
+package yawned.task;
+
 /**
  * Represents the completion state of a task.
  */

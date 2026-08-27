@@ -1,3 +1,5 @@
+package yawned.storage;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -8,6 +10,11 @@ import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import yawned.task.Deadline;
+import yawned.task.Event;
+import yawned.task.Task;
+import yawned.task.ToDo;
 
 /**
  * Loads tasks from and saves tasks to the application's storage file.

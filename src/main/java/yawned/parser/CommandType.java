@@ -1,3 +1,5 @@
+package yawned.parser;
+
 /**
  * Represents a command word accepted by Yawned.
  */
