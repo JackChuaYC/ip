@@ -190,3 +190,166 @@ Bye.. I am going back to sleep.
 ____________________________________________________________
 
 ```
+
+## Test case: Explain incomplete deadline and event date-time formats
+
+**Aim:** Verify that incomplete deadlines and events explain the required `yyyy-MM-dd HHmm` date-time format, without adding tasks before a later valid command.
+
+**Initial storage:** None
+
+**Inputs:**
+
+```text
+deadline /by 2026-01-01 0900
+deadline submit report
+event /from 2026-01-01 0900 /to 2026-01-01 1000
+event meeting /from 2026-01-01 0900
+todo read book
+list
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+
+========================
+         YAWNED
+   Your sleepy chatbot
+========================
+
+*Yawns..* You woke me up...
+What do you want?
+
+____________________________________________________________
+
+____________________________________________________________
+
+I just want to sleep... you forgot to provide a description for the deadline. Use: deadline <description> /by yyyy-MM-dd HHmm
+____________________________________________________________
+
+____________________________________________________________
+
+you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.
+____________________________________________________________
+
+____________________________________________________________
+
+I just want to sleep... you forgot to provide a description for the event. Use: event <description> /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm
+____________________________________________________________
+
+____________________________________________________________
+
+Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+Here you go, the tasks in your list:
+1.[T][ ] read book
+
+____________________________________________________________
+
+____________________________________________________________
+
+Bye.. I am going back to sleep.
+____________________________________________________________
+
+```
+
+## Test case: Reject invalid task numbers without changing tasks
+
+**Aim:** Verify that malformed and out-of-range task-number commands are rejected, while later valid mark, unmark, and delete commands still change the intended task.
+
+**Initial storage:** None
+
+**Inputs:**
+
+```text
+todo read book
+mark
+mark 1
+unmark nope
+unmark 1
+delete 0
+delete 1
+list
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+
+========================
+         YAWNED
+   Your sleepy chatbot
+========================
+
+*Yawns..* You woke me up...
+What do you want?
+
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+*Yawns* You need to tell me which number to mark.. like: mark 2
+____________________________________________________________
+
+____________________________________________________________
+
+finally, that's done:
+  [T][X] read book
+____________________________________________________________
+
+____________________________________________________________
+
+*Yawns* You need to tell me which number to unmark.. like: unmark 2
+____________________________________________________________
+
+____________________________________________________________
+
+As productive as me... unmarked:
+  [T][ ] read book
+____________________________________________________________
+
+____________________________________________________________
+
+you... don't have that task number???
+____________________________________________________________
+
+____________________________________________________________
+
+fine. I removed this task:
+  [T][ ] read book
+Now you have 0 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+No Tasks!
+
+____________________________________________________________
+
+____________________________________________________________
+
+Bye.. I am going back to sleep.
+____________________________________________________________
+
+```
