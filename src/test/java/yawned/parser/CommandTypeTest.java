@@ -19,6 +19,7 @@ class CommandTypeTest {
                 Map.entry(CommandType.MARK, "mark"),
                 Map.entry(CommandType.UNMARK, "unmark"),
                 Map.entry(CommandType.DELETE, "delete"),
+                Map.entry(CommandType.FIND, "find"),
                 Map.entry(CommandType.BYE, "bye"),
                 Map.entry(CommandType.UNKNOWN, ""));
 
@@ -36,6 +37,7 @@ class CommandTypeTest {
                 "mark", CommandType.MARK,
                 "unmark", CommandType.UNMARK,
                 "delete", CommandType.DELETE,
+                "find", CommandType.FIND,
                 "bye", CommandType.BYE);
 
         commands.forEach((input, expectedType) ->
@@ -50,7 +52,8 @@ class CommandTypeTest {
                 "event meeting /from 2026-01-01 0900 /to 2026-01-01 1000", CommandType.EVENT,
                 "mark 1", CommandType.MARK,
                 "unmark 1", CommandType.UNMARK,
-                "delete 1", CommandType.DELETE);
+                "delete 1", CommandType.DELETE,
+                "find book", CommandType.FIND);
 
         commands.forEach((input, expectedType) ->
                 assertEquals(expectedType, CommandType.fromInput(input)));

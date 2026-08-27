@@ -71,4 +71,15 @@ class TaskListTest {
         assertThrows(IndexOutOfBoundsException.class, () -> tasks.deleteTask(1));
         assertFalse(tasks.getTasks().stream().findAny().isPresent());
     }
+
+    @Test
+    void findTasks_matchingAndAbsentKeyword_returnsMatchingTasksInListOrder() {
+        Task firstTask = new ToDo("read book");
+        Task secondTask = new ToDo("buy bread");
+        Task thirdTask = new ToDo("return book");
+        TaskList tasks = new TaskList(List.of(firstTask, secondTask, thirdTask));
+
+        assertEquals(List.of(firstTask, thirdTask), tasks.findTasks("book"));
+        assertTrue(tasks.findTasks("recipe").isEmpty());
+    }
 }
