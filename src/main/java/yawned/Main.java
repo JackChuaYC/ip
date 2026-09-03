@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 
 import yawned.gui.DialogBox;
 
+import java.nio.file.Path;
+
 /**
  * Creates and displays the Yawned JavaFX user interface.
  */
@@ -21,6 +23,9 @@ public class Main extends Application {
     private VBox dialogContainer;
     private TextField userInput;
     private Image userImage = new Image(getClass().getResourceAsStream("/images/DaUser.png"));
+    private Image yawnedImage = new Image(getClass().getResourceAsStream("/images/DaYawned.png"));
+    private Yawned yawned = new Yawned(Path.of("data", "Yawned.txt"));
+
 
     @Override
     public void start(Stage stage) {
@@ -71,7 +76,12 @@ public class Main extends Application {
      * Adds the entered user message to the dialog container and clears the input field.
      */
     private void handleUserInput() {
-        dialogContainer.getChildren().add(new DialogBox(userInput.getText(), userImage));
+        String userText = userInput.getText();
+        String yawnedText = yawned.getResponse(userInput.getText());
+        dialogContainer.getChildren().addAll(
+                new DialogBox(userText, userImage),
+                new DialogBox(yawnedText, yawnedImage)
+        );
         userInput.clear();
     }
 }

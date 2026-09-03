@@ -32,6 +32,10 @@ public class Yawned {
         tasks = new TaskList(storage.loadTasks());
     }
 
+    public String getResponse(String input) {
+        return "Yawned heard: " + input;
+    }
+
     /** Starts the interactive chatbot session. */
     public void run() {
         ui.showWelcome();
