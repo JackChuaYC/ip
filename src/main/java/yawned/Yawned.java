@@ -110,6 +110,10 @@ public class Yawned extends Application {
 
     }
 
+    /**
+     * Creates a dialog box containing user input, and appends it to
+     * the dialog container. Clears the user input after processing.
+     */
     public void handleUserInput() {
         dialogContainer.getChildren().addAll(new DialogBox(userInput.getText(), userImage));
         userInput.clear();
