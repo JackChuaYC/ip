@@ -1,25 +1,32 @@
 package yawned;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
  * Starts the Yawned JavaFX application.
  */
 public class Main extends Application {
-    private static final Path DEFAULT_FILE_PATH = Path.of("data", "Yawned.txt");
+    private final Yawned yawned = new Yawned(Path.of("data", "Yawned.txt"));
 
     @Override
     public void start(Stage stage) {
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.setYawned(new Yawned(DEFAULT_FILE_PATH));
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
+            AnchorPane anchorPane = fxmlLoader.load();
+            MainWindow mainWindow = fxmlLoader.getController();
+            mainWindow.setYawned(yawned);
 
-        stage.setTitle("Yawned");
-        stage.setResizable(false);
-        stage.setScene(new Scene(mainWindow));
-        stage.show();
+            stage.setScene(new Scene(anchorPane));
+            stage.show();
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to load the main window layout.", exception);
+        }
     }
 }
