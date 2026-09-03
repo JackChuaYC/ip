@@ -18,9 +18,17 @@ public class DialogBox extends HBox {
      * @param text Message to display.
      * @param image Image representing the message sender.
      */
-    public DialogBox(String text, Image image) {
-        this.text = new Label(text);
-        displayPicture = new ImageView(image);
-        this.getChildren().addAll(this.text, displayPicture);
+    public DialogBox(String s, Image i) {
+        text = new Label(s);
+        displayPicture = new ImageView(i);
+
+        //Styling the dialog box
+        text.setWrapText(true);
+        displayPicture.setFitWidth(100.0);
+        displayPicture.setFitHeight(100.0);
+        this.setAlignment(Pos.TOP_RIGHT);
+
+        this.getChildren().addAll(text, displayPicture);
     }
+
 }
