@@ -40,36 +40,36 @@ public class Yawned {
         CommandType commandType = parser.parseCommandType(userInput);
         while (commandType != CommandType.BYE) {
             switch (commandType) {
-            case LIST:
-                ui.showTaskList(tasks);
-                userInput = ui.readCommand("");
-                break;
-            case MARK:
-                userInput = ui.readCommand(markTask(userInput));
-                break;
-            case UNMARK:
-                userInput = ui.readCommand(unmarkTask(userInput));
-                break;
-            case DELETE:
-                userInput = ui.readCommand(deleteTaskMessage(userInput));
-                break;
-            case FIND:
-                userInput = ui.readCommand(findTaskMessage(userInput));
-                break;
-            case TODO:
-            case DEADLINE:
-            case EVENT:
-            case UNKNOWN:
-                try {
-                    Task task = parser.parseTask(commandType, userInput);
-                    addTask(task);
-                    userInput = ui.readCommand(addedTaskMessage(task, tasks.size()));
-                } catch (YawnedException exception) {
-                    userInput = ui.readCommand(exception.getMessage());
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unexpected command type: " + commandType);
+                case LIST:
+                    ui.showTaskList(tasks);
+                    userInput = ui.readCommand("");
+                    break;
+                case MARK:
+                    userInput = ui.readCommand(markTask(userInput));
+                    break;
+                case UNMARK:
+                    userInput = ui.readCommand(unmarkTask(userInput));
+                    break;
+                case DELETE:
+                    userInput = ui.readCommand(deleteTaskMessage(userInput));
+                    break;
+                case FIND:
+                    userInput = ui.readCommand(findTaskMessage(userInput));
+                    break;
+                case TODO:
+                case DEADLINE:
+                case EVENT:
+                case UNKNOWN:
+                    try {
+                        Task task = parser.parseTask(commandType, userInput);
+                        addTask(task);
+                        userInput = ui.readCommand(addedTaskMessage(task, tasks.size()));
+                    } catch (YawnedException exception) {
+                        userInput = ui.readCommand(exception.getMessage());
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected command type: " + commandType);
             }
             ui.showBreakLine();
             commandType = parser.parseCommandType(userInput);

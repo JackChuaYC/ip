@@ -110,11 +110,11 @@ public class Storage {
         List<String> fields = splitStorageFields(storedTask);
         validateStorageFields(fields);
         Task task = switch (fields.get(0)) {
-        case "T" -> new ToDo(fields.get(2));
-        case "D" -> new Deadline(fields.get(2), LocalDateTime.parse(fields.get(3)));
-        case "E" -> new Event(fields.get(2), LocalDateTime.parse(fields.get(3)),
-                LocalDateTime.parse(fields.get(4)));
-        default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
+            case "T" -> new ToDo(fields.get(2));
+            case "D" -> new Deadline(fields.get(2), LocalDateTime.parse(fields.get(3)));
+            case "E" -> new Event(fields.get(2), LocalDateTime.parse(fields.get(3)),
+                    LocalDateTime.parse(fields.get(4)));
+            default -> throw new IllegalArgumentException("Cannot load task type: " + fields.get(0));
         };
         if (fields.get(1).equals("1")) {
             task.markAsDone();
@@ -162,10 +162,10 @@ public class Storage {
             throw new IllegalArgumentException("Invalid task status.");
         }
         int expectedFieldCount = switch (fields.get(0)) {
-        case "T" -> 3;
-        case "D" -> 4;
-        case "E" -> 5;
-        default -> throw new IllegalArgumentException("Invalid task type.");
+            case "T" -> 3;
+            case "D" -> 4;
+            case "E" -> 5;
+            default -> throw new IllegalArgumentException("Invalid task type.");
         };
         if (fields.size() != expectedFieldCount) {
             throw new IllegalArgumentException("Invalid number of task fields.");
@@ -186,11 +186,13 @@ public class Storage {
     private static String formatTaskForStorage(Task task) {
         String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
         return switch (task) {
-        case ToDo _ -> "T | " + commonFields;
-        case Deadline deadline -> "D | " + commonFields + " | " + escapeStorageField(deadline.getEndDate().toString());
-        case Event event -> "E | " + commonFields + " | " + escapeStorageField(event.getStartDate().toString())
-                + " | " + escapeStorageField(event.getEndDate().toString());
-        default -> throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
+            case ToDo _ -> "T | " + commonFields;
+            case Deadline deadline -> "D | " + commonFields + " | "
+                    + escapeStorageField(deadline.getEndDate().toString());
+            case Event event -> "E | " + commonFields + " | "
+                    + escapeStorageField(event.getStartDate().toString())
+                    + " | " + escapeStorageField(event.getEndDate().toString());
+            default -> throw new IllegalArgumentException("Cannot save task type: " + task.getClass().getSimpleName());
         };
     }
 

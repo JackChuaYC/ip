@@ -41,11 +41,11 @@ public class Parser {
     public Task parseTask(CommandType commandType, String command) throws YawnedException {
         String details = command.substring(commandType.getWord().length()).trim();
         return switch (commandType) {
-        case TODO -> createToDo(details);
-        case DEADLINE -> createDeadline(details);
-        case EVENT -> createEvent(details);
-        case UNKNOWN -> throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
-        default -> throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
+            case TODO -> createToDo(details);
+            case DEADLINE -> createDeadline(details);
+            case EVENT -> createEvent(details);
+            case UNKNOWN -> throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
+            default -> throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
         };
     }
 
@@ -84,10 +84,10 @@ public class Parser {
     /** Returns the appropriate task-number validation message for a command. */
     private static String missingTaskNumberMessage(CommandType commandType) {
         return switch (commandType) {
-        case DELETE -> "*Yawns* You need to tell me which number to delete.. like: delete 2";
-        case MARK -> "*Yawns* You need to tell me which number to mark.. like: mark 2";
-        case UNMARK -> "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
-        default -> throw new IllegalArgumentException("Cannot select a task from command type: " + commandType);
+            case DELETE -> "*Yawns* You need to tell me which number to delete.. like: delete 2";
+            case MARK -> "*Yawns* You need to tell me which number to mark.. like: mark 2";
+            case UNMARK -> "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
+            default -> throw new IllegalArgumentException("Cannot select a task from command type: " + commandType);
         };
     }
 
