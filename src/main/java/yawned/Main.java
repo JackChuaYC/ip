@@ -79,8 +79,8 @@ public class Main extends Application {
         String userText = userInput.getText();
         String yawnedText = yawned.getResponse(userInput.getText());
         dialogContainer.getChildren().addAll(
-                new DialogBox(userText, userImage),
-                new DialogBox(yawnedText, yawnedImage)
+                DialogBox.getUserDialog(userText, userImage),
+                DialogBox.getYawnedDialog(yawnedText, yawnedImage)
         );
         userInput.clear();
     }

@@ -32,6 +32,12 @@ public class Yawned {
         tasks = new TaskList(storage.loadTasks());
     }
 
+    /**
+     * Returns Yawned's response to the supplied user input.
+     *
+     * @param input User input to respond to.
+     * @return Yawned's response.
+     */
     public String getResponse(String input) {
         return "Yawned heard: " + input;
     }
