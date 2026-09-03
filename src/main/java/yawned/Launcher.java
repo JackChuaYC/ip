@@ -1,7 +1,16 @@
 package yawned;
+
 import javafx.application.Application;
 
+/**
+ * Launches the Yawned JavaFX application.
+ */
 public class Launcher {
+    /**
+     * Starts the JavaFX application.
+     *
+     * @param args Command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
         Application.launch(Yawned.class, args);
     }

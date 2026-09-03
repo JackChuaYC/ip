@@ -76,10 +76,10 @@ public class Yawned extends Application {
 
     }
 
-    /** Overloaded Constructor for JavaFx
-     *
+    /**
+     * Creates the JavaFX application with the default task storage path.
      */
-    public Yawned(){
+    public Yawned() {
         this(DEFAULT_FILE_PATH);
     }
 
