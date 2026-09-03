@@ -56,7 +56,8 @@ test {
 }
 
 application {
-    mainClass = 'yawned.Yawned'
+    mainClass.set("yawned.Launcher")
+    //mainClass = 'yawned.Yawned'
 }
 
 jar {

@@ -11,14 +11,20 @@ import yawned.task.Task;
 import yawned.task.TaskList;
 import yawned.ui.Ui;
 
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
 /**
  * Coordinates the UI, command parser, task list, and storage for Yawned.
  */
-public class Yawned {
+public class Yawned extends Application {
     private final Ui ui;
     private final Parser parser;
     private final Storage storage;
     private final TaskList tasks;
+    private static final Path DEFAULT_FILE_PATH = Path.of("data", "Yanwed.txt");
 
     /**
      * Creates the chatbot and loads its saved tasks.
@@ -31,6 +37,23 @@ public class Yawned {
         storage = new Storage(saveFile);
         tasks = new TaskList(storage.loadTasks());
     }
+
+    @Override
+    public void start(Stage stage) {
+        Label helloWorld = new Label("Hello World!");
+        Scene scene = new Scene(helloWorld);
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    /** Overloaded Constructor for JavaFx
+     *
+     */
+    public Yawned(){
+        this(DEFAULT_FILE_PATH);
+    }
+
 
     /** Starts the interactive chatbot session. */
     public void run() {
