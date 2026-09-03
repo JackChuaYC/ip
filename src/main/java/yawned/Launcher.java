@@ -12,6 +12,6 @@ public class Launcher {
      * @param args Command-line arguments passed to the application.
      */
     public static void main(String[] args) {
-        Application.launch(Yawned.class, args);
+        Application.launch(Main.class, args);
     }
 }
