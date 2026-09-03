@@ -13,9 +13,20 @@ class YawnedTest {
     Path temporaryDirectory;
 
     @Test
-    void getResponse_userInput_returnsYawnedResponse() {
+    void getResponse_taskCommands_updatesTasksAndReturnsResponses() {
         Yawned yawned = new Yawned(temporaryDirectory.resolve("Yawned.txt"));
 
-        assertEquals("Yawned heard: hello", yawned.getResponse("hello"));
+        assertEquals("Got it. I've added this task:\n  [T][ ] read book\nNow you have 1 tasks in the list.",
+                yawned.getResponse("todo read book"));
+        assertEquals("finally, that's done:\n  [T][X] read book", yawned.getResponse("mark 1"));
+        assertEquals("Here you go, the tasks in your list:\n1.[T][X] read book", yawned.getResponse("list"));
+    }
+
+    @Test
+    void getResponse_invalidOrUnknownCommand_returnsValidationMessage() {
+        Yawned yawned = new Yawned(temporaryDirectory.resolve("Yawned.txt"));
+
+        assertEquals("*Yawns* You need to tell me which number to mark.. like: mark 2", yawned.getResponse("mark"));
+        assertEquals("urmmm, but I don't know what that means?? >:-(", yawned.getResponse("dance"));
     }
 }

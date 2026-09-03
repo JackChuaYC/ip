@@ -1,6 +1,7 @@
 package yawned;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Scanner;
 
 import yawned.exception.YawnedException;
@@ -33,13 +34,22 @@ public class Yawned {
     }
 
     /**
-     * Returns Yawned's response to the supplied user input.
+     * Processes a user command and returns the resulting response.
      *
-     * @param input User input to respond to.
-     * @return Yawned's response.
+     * @param input User command to process.
+     * @return Response generated after processing the command.
      */
     public String getResponse(String input) {
-        return "Yawned heard: " + input;
+        CommandType commandType = parser.parseCommandType(input);
+        return switch (commandType) {
+            case LIST -> taskListMessage();
+            case MARK -> markTask(input);
+            case UNMARK -> unmarkTask(input);
+            case DELETE -> deleteTaskMessage(input);
+            case FIND -> findTaskMessage(input);
+            case TODO, DEADLINE, EVENT, UNKNOWN -> addTaskMessage(commandType, input);
+            case BYE -> "Bye.. I am going back to sleep.";
+        };
     }
 
     /** Starts the interactive chatbot session. */
@@ -47,45 +57,29 @@ public class Yawned {
         ui.showWelcome();
         String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
         ui.showBreakLine();
-        CommandType commandType = parser.parseCommandType(userInput);
-        while (commandType != CommandType.BYE) {
-            switch (commandType) {
-                case LIST:
-                    ui.showTaskList(tasks);
-                    userInput = ui.readCommand("");
-                    break;
-                case MARK:
-                    userInput = ui.readCommand(markTask(userInput));
-                    break;
-                case UNMARK:
-                    userInput = ui.readCommand(unmarkTask(userInput));
-                    break;
-                case DELETE:
-                    userInput = ui.readCommand(deleteTaskMessage(userInput));
-                    break;
-                case FIND:
-                    userInput = ui.readCommand(findTaskMessage(userInput));
-                    break;
-                case TODO:
-                case DEADLINE:
-                case EVENT:
-                case UNKNOWN:
-                    try {
-                        Task task = parser.parseTask(commandType, userInput);
-                        addTask(task);
-                        userInput = ui.readCommand(addedTaskMessage(task, tasks.size()));
-                    } catch (YawnedException exception) {
-                        userInput = ui.readCommand(exception.getMessage());
-                    }
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected command type: " + commandType);
-            }
+        while (parser.parseCommandType(userInput) != CommandType.BYE) {
+            userInput = ui.readCommand(getResponse(userInput));
             ui.showBreakLine();
-            commandType = parser.parseCommandType(userInput);
         }
         ui.showMessage("Bye.. I am going back to sleep.");
         ui.showBreakLine();
+    }
+
+    /**
+     * Creates and saves the task described by a task-creation command.
+     *
+     * @param commandType Type of task to create.
+     * @param command Complete user command.
+     * @return Confirmation message or validation error.
+     */
+    private String addTaskMessage(CommandType commandType, String command) {
+        try {
+            Task task = parser.parseTask(commandType, command);
+            addTask(task);
+            return addedTaskMessage(task, tasks.size());
+        } catch (YawnedException exception) {
+            return exception.getMessage();
+        }
     }
 
     /**
@@ -132,6 +126,36 @@ public class Yawned {
     private static String deletedTaskMessage(Task task, int taskCounter) {
         return "fine. I removed this task:\n  " + task
                 + "\nNow you have " + taskCounter + " tasks in the list.";
+    }
+
+    /**
+     * Formats the complete current task list.
+     *
+     * @return Task-list message.
+     */
+    private String taskListMessage() {
+        if (tasks.isEmpty()) {
+            return "No Tasks!";
+        }
+        return taskListMessage("Here you go, the tasks in your list:", tasks.getTasks());
+    }
+
+    /**
+     * Formats a labeled list of tasks.
+     *
+     * @param heading Heading to display before the tasks.
+     * @param taskItems Tasks to display.
+     * @return Formatted task-list message.
+     */
+    private static String taskListMessage(String heading, List<Task> taskItems) {
+        StringBuilder message = new StringBuilder(heading);
+        for (int index = 0; index < taskItems.size(); index++) {
+            message.append('\n')
+                    .append(index + 1)
+                    .append('.')
+                    .append(taskItems.get(index));
+        }
+        return message.toString();
     }
 
     /**
@@ -194,15 +218,18 @@ public class Yawned {
     }
 
     /**
-     * Finds tasks selected by a {@code find <keyword>} command and shows the results.
+     * Finds tasks selected by a {@code find <keyword>} command and formats the results.
      *
      * @param command user command
-     * @return prompt message for the next command
+     * @return Matching-task list or validation message.
      */
     private String findTaskMessage(String command) {
         try {
-            ui.showMatchingTasks(tasks.findTasks(parser.parseFindKeyword(command)));
-            return "";
+            List<Task> matchingTasks = tasks.findTasks(parser.parseFindKeyword(command));
+            if (matchingTasks.isEmpty()) {
+                return "No matching tasks!";
+            }
+            return taskListMessage("Here are the matching tasks in your list:", matchingTasks);
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
