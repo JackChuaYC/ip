@@ -1,4 +1,4 @@
-package yawned;
+package yawned.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import yawned.gui.DialogBox;
+import yawned.Yawned;
 
 /**
  * Controls the main Yawned graphical user interface.

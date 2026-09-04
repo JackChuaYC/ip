@@ -14,8 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-import yawned.MainWindow;
-
 /**
  * Represents a dialog box containing a speaker image and message.
  */
@@ -27,7 +25,7 @@ public class DialogBox extends HBox {
     private ImageView displayPicture;
 
     private DialogBox(String text, Image image) {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(DialogBox.class.getResource("/view/DialogBox.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
