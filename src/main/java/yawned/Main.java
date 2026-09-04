@@ -25,6 +25,9 @@ public class Main extends Application {
             MainWindow mainWindow = fxmlLoader.getController();
             mainWindow.setYawned(yawned);
 
+            stage.setMinHeight(220);
+            stage.setMinWidth(417);
+
             stage.setScene(new Scene(anchorPane));
             stage.show();
         } catch (IOException exception) {
