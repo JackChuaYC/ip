@@ -39,7 +39,7 @@ public class Parser {
      * @throws IllegalArgumentException If {@code commandType} is not a task-creation command.
      */
     public Task parseTask(CommandType commandType, String command) throws YawnedException {
-        String details = command.substring(commandType.getWord().length()).trim();
+        String details = getCommandArguments(command);
         return switch (commandType) {
             case TODO -> createToDo(details);
             case DEADLINE -> createDeadline(details);
@@ -58,7 +58,7 @@ public class Parser {
      * @throws YawnedException If no whole-number task number was provided.
      */
     public int parseTaskNumber(CommandType commandType, String command) throws YawnedException {
-        String taskNumberText = command.substring(commandType.getWord().length()).trim();
+        String taskNumberText = getCommandArguments(command);
         try {
             return Integer.parseInt(taskNumberText);
         } catch (NumberFormatException exception) {
@@ -74,11 +74,20 @@ public class Parser {
      * @throws YawnedException if no keyword was provided
      */
     public String parseFindKeyword(String command) throws YawnedException {
-        String keyword = command.substring(CommandType.FIND.getWord().length()).trim();
+        String keyword = getCommandArguments(command);
         if (keyword.isEmpty()) {
             throw new YawnedException("*Yawns* You need to tell me what to find.. like: find book");
         }
         return keyword;
+    }
+
+    /** Returns the text after the command word supplied by the user. */
+    private static String getCommandArguments(String command) {
+        int firstSpaceIndex = command.indexOf(' ');
+        if (firstSpaceIndex < 0) {
+            return "";
+        }
+        return command.substring(firstSpaceIndex + 1).trim();
     }
 
     /** Returns the appropriate task-number validation message for a command. */

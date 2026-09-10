@@ -36,6 +36,22 @@ class ParserTest {
     }
 
     @Test
+    void parseTask_aliasCommands_extractArgumentsAfterTypedAlias() throws YawnedException {
+        Task todo = parser.parseTask(CommandType.TODO, "t read book");
+        Deadline deadline = assertInstanceOf(Deadline.class,
+                parser.parseTask(CommandType.DEADLINE, "D submit report /by 2026-01-01 0900"));
+        Event event = assertInstanceOf(Event.class,
+                parser.parseTask(CommandType.EVENT, "e meeting /from 2026-01-02 1500 /to 2026-01-02 1600"));
+
+        assertEquals("read book", todo.getDescription());
+        assertEquals("submit report", deadline.getDescription());
+        assertEquals("meeting", event.getDescription());
+        assertEquals(12, parser.parseTaskNumber(CommandType.MARK, "m 12"));
+        assertEquals(7, parser.parseTaskNumber(CommandType.DELETE, "del 7"));
+        assertEquals("project meeting", parser.parseFindKeyword("F project meeting"));
+    }
+
+    @Test
     void parseTask_incompleteOrInvalidTaskCommands_throwsHelpfulException() {
         assertYawnedException(CommandType.TODO, "todo",
                 "hey!!! The description of a todo cannot be empty. *yawns*");

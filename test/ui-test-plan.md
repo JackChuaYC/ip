@@ -349,3 +349,99 @@ Bye.. I am going back to sleep.
 ____________________________________________________________
 
 ```
+
+## Test case: Use built-in command aliases
+
+**Aim:** Verify that case-insensitive built-in aliases perform the same actions and show the same output as their
+canonical commands.
+
+**Initial storage:** None
+
+**Inputs:**
+
+```text
+T read book
+D submit report /by 2026-12-31 0900
+E project meeting /from 2026-01-02 1500 /to 2026-01-02 1600
+M 1
+U 1
+F book
+DeL 1
+L
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+
+========================
+         YAWNED
+   Your sleepy chatbot
+========================
+
+*Yawns..* You woke me up...
+What do you want?
+
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [D][ ] submit report (by: DEC 31 2026 0900)
+Now you have 2 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [E][ ] project meeting (from: JAN 02 2026 1500 to: JAN 02 2026 1600)
+Now you have 3 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+finally, that's done:
+  [T][X] read book
+____________________________________________________________
+
+____________________________________________________________
+
+As productive as me... unmarked:
+  [T][ ] read book
+____________________________________________________________
+
+____________________________________________________________
+
+Here are the matching tasks in your list:
+1.[T][ ] read book
+____________________________________________________________
+
+____________________________________________________________
+
+fine. I removed this task:
+  [T][ ] read book
+Now you have 2 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+Here you go, the tasks in your list:
+1.[D][ ] submit report (by: DEC 31 2026 0900)
+2.[E][ ] project meeting (from: JAN 02 2026 1500 to: JAN 02 2026 1600)
+____________________________________________________________
+
+____________________________________________________________
+
+Bye.. I am going back to sleep.
+____________________________________________________________
+
+```

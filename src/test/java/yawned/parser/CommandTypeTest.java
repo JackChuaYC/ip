@@ -60,6 +60,22 @@ class CommandTypeTest {
     }
 
     @Test
+    void fromInput_builtinAliases_returnsMatchingCommandType() {
+        Map<String, CommandType> aliases = Map.of(
+                "T read book", CommandType.TODO,
+                "d submit report /by 2026-01-01 0900", CommandType.DEADLINE,
+                "E meeting /from 2026-01-01 0900 /to 2026-01-01 1000", CommandType.EVENT,
+                "l", CommandType.LIST,
+                "M 1", CommandType.MARK,
+                "u 1", CommandType.UNMARK,
+                "DeL 1", CommandType.DELETE,
+                "F book", CommandType.FIND);
+
+        aliases.forEach((input, expectedType) ->
+                assertEquals(expectedType, CommandType.fromInput(input)));
+    }
+
+    @Test
     void fromInput_noArgumentCommandWithExtraText_returnsUnknown() {
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("list all"));
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("bye now"));
@@ -72,5 +88,9 @@ class CommandTypeTest {
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("mark2"));
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput(" list"));
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("TODO buy bread"));
+        assertEquals(CommandType.UNKNOWN, CommandType.fromInput("todolist buy bread"));
+        assertEquals(CommandType.UNKNOWN, CommandType.fromInput("deluxe 1"));
+        assertEquals(CommandType.UNKNOWN, CommandType.fromInput("l all"));
+        assertEquals(CommandType.UNKNOWN, CommandType.fromInput("b"));
     }
 }
