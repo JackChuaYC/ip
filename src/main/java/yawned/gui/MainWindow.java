@@ -7,8 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-
 import yawned.Yawned;
+import yawned.parser.CommandType;
 
 /**
  * Controls the main Yawned graphical user interface.
@@ -54,7 +54,8 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = getUserInput();
         String response = getYawnedResponse(input);
-        addDialogBoxes(input, response);
+        CommandType commandType = CommandType.fromInput(input);
+        addDialogBoxes(input, response, commandType);
         clearUserInput();
     }
 
@@ -83,10 +84,10 @@ public class MainWindow extends AnchorPane {
      * @param input User message to display.
      * @param response Yawned response to display.
      */
-    private void addDialogBoxes(String input, String response) {
+    private void addDialogBoxes(String input, String response, CommandType commandType) {
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getYawnedDialog(response, yawnedImage));
+                DialogBox.getYawnedDialog(response, yawnedImage, commandType));
     }
 
     /**

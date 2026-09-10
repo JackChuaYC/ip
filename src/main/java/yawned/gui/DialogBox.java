@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import yawned.parser.CommandType;
 
 /**
  * Represents a dialog box containing a speaker image and message.
@@ -47,6 +48,31 @@ public class DialogBox extends HBox {
         Collections.reverse(children);
         getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
+        dialog.getStyleClass().add("reply-label");
+    }
+
+    /**
+     * Applies the response color associated with the supplied command type.
+     *
+     * @param commandType Type of command that produced this response.
+     */
+    private void changeDialogStyle(CommandType commandType) {
+        switch (commandType) {
+            case TODO:
+            case DEADLINE:
+            case EVENT:
+                dialog.getStyleClass().add("add-label");
+                break;
+            case MARK:
+            case UNMARK:
+                dialog.getStyleClass().add("marked-label");
+                break;
+            case DELETE:
+                dialog.getStyleClass().add("delete-label");
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -65,11 +91,13 @@ public class DialogBox extends HBox {
      *
      * @param text Message to display.
      * @param image Image representing Yawned.
+     * @param commandType Type of command that produced the response.
      * @return A left-aligned Yawned dialog box.
      */
-    public static DialogBox getYawnedDialog(String text, Image image) {
+    public static DialogBox getYawnedDialog(String text, Image image, CommandType commandType) {
         DialogBox dialogBox = new DialogBox(text, image);
         dialogBox.flip();
+        dialogBox.changeDialogStyle(commandType);
         return dialogBox;
     }
 }
