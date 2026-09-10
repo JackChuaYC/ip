@@ -111,12 +111,15 @@ public class Parser {
             throw new YawnedException(
                     "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
         }
+        assert byIndex > 0 : "A validated deadline must contain a description before /by.";
         String endDate = details.substring(byIndex + " /by".length()).trim();
         if (endDate.isEmpty()) {
             throw new YawnedException(
                     "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
         }
-        return new Deadline(details.substring(0, byIndex).trim(), parseDateTime(endDate));
+        String description = details.substring(0, byIndex).trim();
+        assert !description.isEmpty() : "A validated deadline must have a description.";
+        return new Deadline(description, parseDateTime(endDate));
     }
 
     /** Creates an event from its command details. */
@@ -131,18 +134,22 @@ public class Parser {
             throw new YawnedException(
                     "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
         }
+        assert fromIndex > 0 : "A validated event must contain a description before /from.";
         int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
         if (toIndex < 0) {
             throw new YawnedException(
                     "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
         }
+        assert toIndex > fromIndex : "The /to marker must follow the /from marker.";
         String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
         String toDate = details.substring(toIndex + " /to".length()).trim();
         if (fromDate.isEmpty() || toDate.isEmpty()) {
             throw new YawnedException(
                     "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
         }
-        return new Event(details.substring(0, fromIndex).trim(), parseDateTime(fromDate), parseDateTime(toDate));
+        String description = details.substring(0, fromIndex).trim();
+        assert !description.isEmpty() : "A validated event must have a description.";
+        return new Event(description, parseDateTime(fromDate), parseDateTime(toDate));
     }
 
     /**
