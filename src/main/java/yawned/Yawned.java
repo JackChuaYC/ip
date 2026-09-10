@@ -167,7 +167,7 @@ public class Yawned {
     private String deleteTaskMessage(String command) {
         try {
             int taskNumber = parser.parseTaskNumber(CommandType.DELETE, command);
-            if (taskNumber < 1 || taskNumber > tasks.size()) {
+            if (!isValidTaskNumber(taskNumber)) {
                 return "you... don't have that task number???";
             }
             Task deletedTask = deleteTask(taskNumber);
@@ -186,7 +186,7 @@ public class Yawned {
     private String markTask(String command) {
         try {
             int taskNumber = parser.parseTaskNumber(CommandType.MARK, command);
-            if (taskNumber < 1 || taskNumber > tasks.size()) {
+            if (!isValidTaskNumber(taskNumber)) {
                 return "you... don't have that task number???";
             }
             Task task = tasks.markTask(taskNumber);
@@ -206,7 +206,7 @@ public class Yawned {
     private String unmarkTask(String command) {
         try {
             int taskNumber = parser.parseTaskNumber(CommandType.UNMARK, command);
-            if (taskNumber < 1 || taskNumber > tasks.size()) {
+            if (!isValidTaskNumber(taskNumber)) {
                 return "you... don't have that task number???";
             }
             Task task = tasks.unmarkTask(taskNumber);
@@ -215,6 +215,16 @@ public class Yawned {
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
+    }
+
+    /**
+     * Returns whether a task number identifies a task in the current list.
+     *
+     * @param taskNumber One-based task number.
+     * @return Whether the task number is in the current list's valid range.
+     */
+    private boolean isValidTaskNumber(int taskNumber) {
+        return taskNumber >= 1 && taskNumber <= tasks.size();
     }
 
     /**
