@@ -43,8 +43,10 @@ public enum CommandType {
             if (commandType == UNKNOWN) {
                 continue;
             }
-            if (input.equals(commandType.word)
-                    || commandType.acceptsArguments && input.startsWith(commandType.word + " ")) {
+            boolean isExactCommand = input.equals(commandType.word);
+            boolean hasCommandArguments = commandType.acceptsArguments
+                    && input.startsWith(commandType.word + " ");
+            if (isExactCommand || hasCommandArguments) {
                 return commandType;
             }
         }

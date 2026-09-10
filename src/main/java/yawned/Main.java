@@ -14,6 +14,9 @@ import yawned.gui.MainWindow;
  * Starts the Yawned JavaFX application.
  */
 public class Main extends Application {
+    private static final double MINIMUM_WINDOW_HEIGHT = 220;
+    private static final double MINIMUM_WINDOW_WIDTH = 417;
+
     private final Yawned yawned = new Yawned(Path.of("data", "Yawned.txt"));
 
     @Override
@@ -24,8 +27,8 @@ public class Main extends Application {
             MainWindow mainWindow = fxmlLoader.getController();
             mainWindow.setYawned(yawned);
 
-            stage.setMinHeight(220);
-            stage.setMinWidth(417);
+            stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
+            stage.setMinWidth(MINIMUM_WINDOW_WIDTH);
 
             stage.setScene(new Scene(anchorPane));
             stage.show();
