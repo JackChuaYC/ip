@@ -184,6 +184,7 @@ public class Storage {
      * @return Serialized task data.
      */
     private static String formatTaskForStorage(Task task) {
+        assert task != null : "Only existing tasks can be saved.";
         String commonFields = task.getStatus().getStorageValue() + " | " + escapeStorageField(task.getDescription());
         return switch (task) {
             case ToDo _ -> "T | " + commonFields;
