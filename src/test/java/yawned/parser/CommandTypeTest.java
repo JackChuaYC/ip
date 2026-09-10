@@ -20,6 +20,7 @@ class CommandTypeTest {
                 Map.entry(CommandType.UNMARK, "unmark"),
                 Map.entry(CommandType.DELETE, "delete"),
                 Map.entry(CommandType.FIND, "find"),
+                Map.entry(CommandType.ALIAS, "alias"),
                 Map.entry(CommandType.BYE, "bye"),
                 Map.entry(CommandType.UNKNOWN, ""));
 
@@ -38,6 +39,7 @@ class CommandTypeTest {
                 "unmark", CommandType.UNMARK,
                 "delete", CommandType.DELETE,
                 "find", CommandType.FIND,
+                "alias", CommandType.ALIAS,
                 "bye", CommandType.BYE);
 
         commands.forEach((input, expectedType) ->

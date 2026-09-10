@@ -107,6 +107,27 @@ class ParserTest {
         assertEquals("*Yawns* You need to tell me what to find.. like: find book", exception.getMessage());
     }
 
+    @Test
+    void parseAliasCommand_validCreationAndRemoval_returnsAliasDetails() throws YawnedException {
+        AliasCommand creation = parser.parseAliasCommand("alias hw todo");
+        AliasCommand removal = parser.parseAliasCommand("alias remove hw");
+
+        assertEquals("hw", creation.aliasName());
+        assertEquals("todo", creation.targetCommand());
+        assertEquals(false, creation.removal());
+        assertEquals("hw", removal.aliasName());
+        assertEquals("", removal.targetCommand());
+        assertEquals(true, removal.removal());
+    }
+
+    @Test
+    void parseAliasCommand_missingOrExtraArguments_throwsHelpfulException() {
+        assertAliasException("alias");
+        assertAliasException("alias hw");
+        assertAliasException("alias remove");
+        assertAliasException("alias hw todo extra");
+    }
+
     private void assertYawnedException(CommandType commandType, String command, String expectedMessage) {
         YawnedException exception = assertThrows(YawnedException.class, () ->
                 parser.parseTask(commandType, command));
@@ -117,5 +138,10 @@ class ParserTest {
         YawnedException exception = assertThrows(YawnedException.class, () ->
                 parser.parseTaskNumber(commandType, command));
         assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    private void assertAliasException(String command) {
+        YawnedException exception = assertThrows(YawnedException.class, () -> parser.parseAliasCommand(command));
+        assertEquals("Use: alias <name> <command> or alias remove <name>.", exception.getMessage());
     }
 }

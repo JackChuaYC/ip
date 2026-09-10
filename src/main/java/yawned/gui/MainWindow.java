@@ -53,8 +53,8 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = getUserInput();
+        CommandType commandType = yawned.getCommandType(input);
         String response = getYawnedResponse(input);
-        CommandType commandType = CommandType.fromInput(input);
         addDialogBoxes(input, response, commandType);
         clearUserInput();
     }

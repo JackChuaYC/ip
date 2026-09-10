@@ -4,9 +4,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
 
+import yawned.alias.AliasManager;
+import yawned.alias.AliasResult;
 import yawned.exception.YawnedException;
+import yawned.parser.AliasCommand;
 import yawned.parser.CommandType;
 import yawned.parser.Parser;
+import yawned.storage.AliasStorage;
 import yawned.storage.Storage;
 import yawned.task.Task;
 import yawned.task.TaskList;
@@ -18,6 +22,7 @@ import yawned.ui.Ui;
 public class Yawned {
     private final Ui ui;
     private final Parser parser;
+    private final AliasManager aliasManager;
     private final Storage storage;
     private final TaskList tasks;
 
@@ -30,6 +35,7 @@ public class Yawned {
         ui = new Ui(new Scanner(System.in));
         parser = new Parser();
         storage = new Storage(saveFile);
+        aliasManager = new AliasManager(new AliasStorage(saveFile.resolveSibling("aliases.txt")));
         tasks = new TaskList(storage.loadTasks());
     }
 
@@ -40,16 +46,27 @@ public class Yawned {
      * @return Response generated after processing the command.
      */
     public String getResponse(String input) {
-        CommandType commandType = parser.parseCommandType(input);
+        CommandType commandType = getCommandType(input);
         return switch (commandType) {
             case LIST -> taskListMessage();
             case MARK -> markTask(input);
             case UNMARK -> unmarkTask(input);
             case DELETE -> deleteTaskMessage(input);
             case FIND -> findTaskMessage(input);
+            case ALIAS -> aliasMessage(input);
             case TODO, DEADLINE, EVENT, UNKNOWN -> addTaskMessage(commandType, input);
             case BYE -> "Bye.. I am going back to sleep.";
         };
+    }
+
+    /**
+     * Returns the resolved command type for a user input.
+     *
+     * @param input User input to resolve.
+     * @return Resolved canonical command type.
+     */
+    public CommandType getCommandType(String input) {
+        return aliasManager.resolveCommandType(input);
     }
 
     /** Starts the interactive chatbot session. */
@@ -57,7 +74,7 @@ public class Yawned {
         ui.showWelcome();
         String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
         ui.showBreakLine();
-        while (parser.parseCommandType(userInput) != CommandType.BYE) {
+        while (getCommandType(userInput) != CommandType.BYE) {
             userInput = ui.readCommand(getResponse(userInput));
             ui.showBreakLine();
         }
@@ -243,6 +260,39 @@ public class Yawned {
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
+    }
+
+    /**
+     * Creates or removes a custom command alias.
+     *
+     * @param command Complete alias command.
+     * @return Confirmation or validation message.
+     */
+    private String aliasMessage(String command) {
+        try {
+            AliasCommand aliasCommand = parser.parseAliasCommand(command);
+            String aliasName = AliasManager.normalize(aliasCommand.aliasName());
+            AliasResult result = aliasCommand.removal()
+                    ? aliasManager.removeAlias(aliasName)
+                    : aliasManager.defineAlias(aliasName, aliasCommand.targetCommand());
+            return aliasResultMessage(aliasCommand, aliasName, result);
+        } catch (YawnedException exception) {
+            return exception.getMessage();
+        }
+    }
+
+    /** Returns the user-facing message for an alias operation result. */
+    private static String aliasResultMessage(AliasCommand aliasCommand, String aliasName, AliasResult result) {
+        return switch (result) {
+            case SUCCESS -> aliasCommand.removal()
+                    ? "Alias '" + aliasName + "' has been removed."
+                    : "Alias '" + aliasName + "' now runs '" + aliasCommand.targetCommand() + "'.";
+            case INVALID_NAME -> "Alias names must contain letters only.";
+            case RESERVED_NAME -> "That alias name is reserved.";
+            case INVALID_TARGET -> "Aliases must target a canonical task command.";
+            case NOT_FOUND -> "No alias named '" + aliasName + "'.";
+            case SAVE_FAILED -> "OOPS!!! I couldn't save aliases.";
+        };
     }
 
     /** Starts Yawned using its standard relative storage path. */

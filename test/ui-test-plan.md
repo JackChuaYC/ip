@@ -444,3 +444,78 @@ Bye.. I am going back to sleep.
 ____________________________________________________________
 
 ```
+
+## Test case: Create and remove custom aliases
+
+**Aim:** Verify that custom aliases are case-insensitive, can coexist for one command, and stop working after
+removal.
+
+**Initial storage:** None
+
+**Inputs:**
+
+```text
+alias hw todo
+HW finish assignment
+alias work todo
+alias remove hw
+hw another task
+work next task
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+
+========================
+         YAWNED
+   Your sleepy chatbot
+========================
+
+*Yawns..* You woke me up...
+What do you want?
+
+____________________________________________________________
+
+____________________________________________________________
+
+Alias 'hw' now runs 'todo'.
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [T][ ] finish assignment
+Now you have 1 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+Alias 'work' now runs 'todo'.
+____________________________________________________________
+
+____________________________________________________________
+
+Alias 'hw' has been removed.
+____________________________________________________________
+
+____________________________________________________________
+
+urmmm, but I don't know what that means?? >:-(
+____________________________________________________________
+
+____________________________________________________________
+
+Got it. I've added this task:
+  [T][ ] next task
+Now you have 2 tasks in the list.
+____________________________________________________________
+
+____________________________________________________________
+
+Bye.. I am going back to sleep.
+____________________________________________________________
+
+```

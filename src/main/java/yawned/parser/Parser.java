@@ -81,6 +81,25 @@ public class Parser {
         return keyword;
     }
 
+    /**
+     * Parses an alias creation or removal command.
+     *
+     * @param command Complete alias command.
+     * @return Parsed alias command.
+     * @throws YawnedException If the command does not contain exactly the required arguments.
+     */
+    public AliasCommand parseAliasCommand(String command) throws YawnedException {
+        String details = getCommandArguments(command);
+        String[] arguments = details.split(" +");
+        if (arguments.length != 2) {
+            throw new YawnedException("Use: alias <name> <command> or alias remove <name>.");
+        }
+        if (arguments[0].equals("remove")) {
+            return new AliasCommand(arguments[1], "", true);
+        }
+        return new AliasCommand(arguments[0], arguments[1], false);
+    }
+
     /** Returns the text after the command word supplied by the user. */
     private static String getCommandArguments(String command) {
         int firstSpaceIndex = command.indexOf(' ');
