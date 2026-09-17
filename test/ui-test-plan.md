@@ -49,8 +49,7 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-Done at last. I've marked this complete:
-  [T][X] borrow book
+Finally, I can sleep in peace without this task bothering me... marked complete: [T][X] borrow book
 ____________________________________________________________
 
 ____________________________________________________________
@@ -127,6 +126,42 @@ ____________________________________________________________
 ____________________________________________________________
 
 *yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, find, or alias.
+____________________________________________________________
+
+```
+
+## Test case: Recover from unreadable saved tasks
+
+**Aim:** Verify that an unreadable saved task is skipped with a clear, sleepy warning and does not prevent use of
+the task list.
+
+**Initial storage:** `T | 2 | damaged`
+
+**Inputs:**
+
+```text
+list
+```
+
+**Expected output:**
+
+```text
+*yawn* I skipped an unreadable saved task on line 1. It seems to have dozed off.
+____________________________________________________________
+
+========================
+         YAWNED
+ Reluctantly organized
+========================
+
+*yawn* Yawned is awake enough to help.
+What can I do for you?
+
+____________________________________________________________
+
+____________________________________________________________
+
+Nothing on the list. A rare moment of peace.
 ____________________________________________________________
 
 ```
@@ -210,7 +245,7 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-All set. Alias 'hw' now runs 'todo'.
+All set. Alias 'hw' now runs 'todo'. *yawn* Remembering another alias is tiring.
 ____________________________________________________________
 
 ____________________________________________________________
@@ -228,7 +263,7 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-All set. Alias 'hw' has been removed.
+All set. Alias 'hw' has been removed. One less thing to remember - what a relief.
 ____________________________________________________________
 
 ____________________________________________________________

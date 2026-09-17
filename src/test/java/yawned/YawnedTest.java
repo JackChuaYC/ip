@@ -18,7 +18,9 @@ class YawnedTest {
 
         assertEquals("Noted. I've tucked this into your task list:\n  [T][ ] read book\nYou now have 1 task(s).",
                 yawned.getResponse("todo read book"));
-        assertEquals("Done at last. I've marked this complete:\n  [T][X] read book", yawned.getResponse("mark 1"));
+        assertEquals("Finally, I can sleep in peace without this task bothering me..."
+                        + " marked complete: [T][X] read book",
+                yawned.getResponse("mark 1"));
         assertEquals("Here's what's keeping you busy:\n1.[T][X] read book", yawned.getResponse("list"));
     }
 
@@ -28,7 +30,9 @@ class YawnedTest {
 
         assertEquals("Noted. I've tucked this into your task list:\n  [T][ ] read book\nYou now have 1 task(s).",
                 yawned.getResponse("T read book"));
-        assertEquals("Done at last. I've marked this complete:\n  [T][X] read book", yawned.getResponse("m 1"));
+        assertEquals("Finally, I can sleep in peace without this task bothering me..."
+                        + " marked complete: [T][X] read book",
+                yawned.getResponse("m 1"));
         assertEquals("Back on the radar. I've marked this incomplete:\n  [T][ ] read book", yawned.getResponse("U 1"));
         assertEquals("I found these before my attention drifted:\n1.[T][ ] read book", yawned.getResponse("f book"));
         assertEquals("One less thing to carry around. Removed:\n  [T][ ] read book\n0 task(s) remain.",
@@ -41,17 +45,20 @@ class YawnedTest {
         Path saveFile = temporaryDirectory.resolve("Yawned.txt");
         Yawned yawned = new Yawned(saveFile);
 
-        assertEquals("All set. Alias 'hw' now runs 'todo'.", yawned.getResponse("alias HW todo"));
+        assertEquals("All set. Alias 'hw' now runs 'todo'. *yawn* Remembering another alias is tiring.",
+                yawned.getResponse("alias HW todo"));
         assertEquals("Noted. I've tucked this into your task list:\n  [T][ ] finish assignment"
                         + "\nYou now have 1 task(s).",
                 yawned.getResponse("hW finish assignment"));
-        assertEquals("All set. Alias 'hw' now runs 'deadline'.", yawned.getResponse("alias hw deadline"));
+        assertEquals("All set. Alias 'hw' now runs 'deadline'. *yawn* Remembering another alias is tiring.",
+                yawned.getResponse("alias hw deadline"));
 
         Yawned reloadedYawned = new Yawned(saveFile);
         assertEquals("Noted. I've tucked this into your task list:\n  [D][ ] submit report (by: JAN 01 2026 0900)"
                         + "\nYou now have 2 task(s).",
                 reloadedYawned.getResponse("HW submit report /by 2026-01-01 0900"));
-        assertEquals("All set. Alias 'hw' has been removed.", reloadedYawned.getResponse("alias remove Hw"));
+        assertEquals("All set. Alias 'hw' has been removed. One less thing to remember - what a relief.",
+                reloadedYawned.getResponse("alias remove Hw"));
         assertEquals("*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, "
                         + "find, or alias.",
                 reloadedYawned.getResponse("hw finish assignment"));

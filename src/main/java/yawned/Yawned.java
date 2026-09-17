@@ -213,7 +213,7 @@ public class Yawned {
             }
             Task task = tasks.markTask(taskNumber);
             storage.saveTasks(tasks.getTasks());
-            return "Done at last. I've marked this complete:\n  " + task;
+            return "Finally, I can sleep in peace without this task bothering me... marked complete: " + task;
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
@@ -293,8 +293,9 @@ public class Yawned {
     private static String aliasResultMessage(AliasCommand aliasCommand, String aliasName, AliasResult result) {
         return switch (result) {
             case SUCCESS -> aliasCommand.action() == AliasAction.REMOVE
-                    ? "All set. Alias '" + aliasName + "' has been removed."
-                    : "All set. Alias '" + aliasName + "' now runs '" + aliasCommand.targetCommand() + "'.";
+                    ? "All set. Alias '" + aliasName + "' has been removed. One less thing to remember - what a relief."
+                    : "All set. Alias '" + aliasName + "' now runs '" + aliasCommand.targetCommand()
+                            + "'. *yawn* Remembering another alias is tiring.";
             case INVALID_NAME -> "I need an alias name made of letters only.";
             case RESERVED_NAME -> "That alias name is already reserved, even I can't nap through that rule.";
             case INVALID_TARGET -> "Aliases can only run a standard task command.";

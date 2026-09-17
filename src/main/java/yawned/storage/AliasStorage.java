@@ -41,7 +41,8 @@ public class AliasStorage {
                 addStoredAlias(aliases, storedAliases.get(lineIndex), lineIndex + 1);
             }
         } catch (IOException exception) {
-            System.out.println("I couldn't read saved aliases, so I'm starting with none.");
+            System.out.println("*yawn* I couldn't read saved aliases, so I'm starting with none."
+                    + " They seem to be napping.");
             aliases.clear();
         }
         return aliases;
@@ -116,6 +117,7 @@ public class AliasStorage {
 
     /** Reports one invalid alias record. */
     private static void reportInvalidStoredAlias(int lineNumber) {
-        System.out.println("I skipped an unreadable saved alias on line " + lineNumber + ".");
+        System.out.println("*yawn* I skipped an unreadable saved alias on line " + lineNumber
+                + ". It must have wandered off in its sleep.");
     }
 }
