@@ -1,40 +1,36 @@
 .label {
-    background:white;
-    -fx-background-color: background;
-    -fx-background-color: linear-gradient(to bottom right, #00ffbf, #00ddff);
-    -fx-border-color: #d55e00 #009e73 #cc79a7 #0072b2;
-    -fx-border-width: 2px;
-    -fx-background-radius: 1em 1em 0 1em;
-    -fx-border-radius: 1em 1em 0 1em;
-    -fx-text-fill:ladder(background, white 49%, black 50%);
+    -fx-background-color: #496A8A;
+    -fx-background-radius: 14 14 2 14;
+    -fx-border-color: #6686A7;
+    -fx-border-radius: 14 14 2 14;
+    -fx-border-width: 1px;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #EEF0F6;
 }
 
 .reply-label {
-    -fx-background-radius: 1em 1em 1em 0;
-    -fx-border-radius: 1em 1em 1em 0;
+    -fx-background-color: #38334D;
+    -fx-background-radius: 14 14 14 2;
+    -fx-border-color: #58506F;
+    -fx-border-radius: 14 14 14 2;
 }
 
 #displayPicture {
-    /* Shadow effect on image. */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);
-
-    /* Change size of image. */
-    -fx-scale-x: 1;
-    -fx-scale-y: 1;
-
-    /* Rotate image clockwise by degrees. */
-    -fx-rotate: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 8, 0.25, 2, 3);
 }
 
-/* Paste this below reply-label */
 .add-label {
-    -fx-background-color: yellow;
+    -fx-background-color: #38584B;
+    -fx-border-color: #6E9B80;
 }
 
 .marked-label {
-    -fx-background-color: palegreen;
+    -fx-background-color: #405C52;
+    -fx-border-color: #7BA68E;
 }
 
 .delete-label {
-    -fx-background-color: lightpink;
+    -fx-background-color: #62444D;
+    -fx-border-color: #C97878;
 }
