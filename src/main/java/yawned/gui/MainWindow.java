@@ -26,7 +26,6 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private final Image userImage = new Image(getClass().getResourceAsStream("/images/DaUser.png"));
     private final Image yawnedImage = new Image(getClass().getResourceAsStream("/images/YawnedMascot.png"));
     private Yawned yawned;
 
@@ -86,7 +85,7 @@ public class MainWindow extends AnchorPane {
      */
     private void addDialogBoxes(String input, String response, CommandType commandType) {
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
+                DialogBox.getUserDialog(input),
                 DialogBox.getYawnedDialog(response, yawnedImage, commandType));
     }
 

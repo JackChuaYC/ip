@@ -41,14 +41,24 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Flips this dialog so its image is on the left and its message is on the right.
+     * Configures Yawned's reply with its image on the left and message on the right.
      */
-    private void flip() {
+    private void configureYawnedReply() {
         ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
         Collections.reverse(children);
         getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
         dialog.getStyleClass().add("reply-label");
+    }
+
+    /**
+     * Configures the compact layout used for a user message.
+     */
+    private void configureUserMessage() {
+        displayPicture.setManaged(false);
+        displayPicture.setVisible(false);
+        getStyleClass().add("user-dialog");
+        dialog.getStyleClass().add("user-label");
     }
 
     /**
@@ -79,11 +89,12 @@ public class DialogBox extends HBox {
      * Returns a dialog box for a user message.
      *
      * @param text Message to display.
-     * @param image Image representing the user.
      * @return A right-aligned user dialog box.
      */
-    public static DialogBox getUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+    public static DialogBox getUserDialog(String text) {
+        DialogBox dialogBox = new DialogBox(text, null);
+        dialogBox.configureUserMessage();
+        return dialogBox;
     }
 
     /**
@@ -96,7 +107,7 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getYawnedDialog(String text, Image image, CommandType commandType) {
         DialogBox dialogBox = new DialogBox(text, image);
-        dialogBox.flip();
+        dialogBox.configureYawnedReply();
         dialogBox.changeDialogStyle(commandType);
         return dialogBox;
     }
