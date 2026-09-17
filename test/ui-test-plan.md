@@ -131,6 +131,52 @@ ____________________________________________________________
 
 ```
 
+## Test case: List available aliases
+
+**Aim:** Verify that `alias list` shows built-in shortcuts and the empty custom-alias guidance without changing data.
+
+**Initial storage:** None
+
+**Inputs:**
+
+```text
+alias list
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+
+========================
+         YAWNED
+ Reluctantly organized
+========================
+
+*yawn* Yawned is awake enough to help.
+What can I do for you?
+
+____________________________________________________________
+
+____________________________________________________________
+
+Here are the shortcuts I know:
+
+Built-in:
+  t -> todo
+  d -> deadline
+  e -> event
+  l -> list
+  m -> mark
+  u -> unmark
+  del -> delete
+  f -> find
+
+No custom aliases yet. Add one with: alias <name> <command>
+____________________________________________________________
+
+```
+
 ## Test case: Use aliases and find tasks
 
 **Aim:** Verify that custom and built-in aliases retain their behavior and responses are consistent with the new voice.

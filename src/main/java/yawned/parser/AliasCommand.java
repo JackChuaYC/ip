@@ -3,9 +3,9 @@ package yawned.parser;
 /**
  * Represents the arguments of an alias creation or removal command.
  *
- * @param aliasName Name being created or removed.
- * @param targetCommand Canonical target command for a creation request.
- * @param removal Whether this request removes an alias.
+ * @param aliasName Name affected by a definition or removal request, or empty when listing.
+ * @param targetCommand Canonical target command for a definition request, or empty otherwise.
+ * @param action Requested alias action.
  */
-public record AliasCommand(String aliasName, String targetCommand, boolean removal) {
+public record AliasCommand(String aliasName, String targetCommand, AliasAction action) {
 }

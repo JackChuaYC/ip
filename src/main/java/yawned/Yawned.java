@@ -2,11 +2,13 @@ package yawned;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import yawned.alias.AliasManager;
 import yawned.alias.AliasResult;
 import yawned.exception.YawnedException;
+import yawned.parser.AliasAction;
 import yawned.parser.AliasCommand;
 import yawned.parser.CommandType;
 import yawned.parser.Parser;
@@ -274,8 +276,11 @@ public class Yawned {
     private String aliasMessage(String command) {
         try {
             AliasCommand aliasCommand = parser.parseAliasCommand(command);
+            if (aliasCommand.action() == AliasAction.LIST) {
+                return aliasListMessage(aliasManager.getAliases());
+            }
             String aliasName = AliasManager.normalize(aliasCommand.aliasName());
-            AliasResult result = aliasCommand.removal()
+            AliasResult result = aliasCommand.action() == AliasAction.REMOVE
                     ? aliasManager.removeAlias(aliasName)
                     : aliasManager.defineAlias(aliasName, aliasCommand.targetCommand());
             return aliasResultMessage(aliasCommand, aliasName, result);
@@ -287,7 +292,7 @@ public class Yawned {
     /** Returns the user-facing message for an alias operation result. */
     private static String aliasResultMessage(AliasCommand aliasCommand, String aliasName, AliasResult result) {
         return switch (result) {
-            case SUCCESS -> aliasCommand.removal()
+            case SUCCESS -> aliasCommand.action() == AliasAction.REMOVE
                     ? "All set. Alias '" + aliasName + "' has been removed."
                     : "All set. Alias '" + aliasName + "' now runs '" + aliasCommand.targetCommand() + "'.";
             case INVALID_NAME -> "I need an alias name made of letters only.";
@@ -296,6 +301,29 @@ public class Yawned {
             case NOT_FOUND -> "I couldn't find an alias named '" + aliasName + "'.";
             case SAVE_FAILED -> "I couldn't save that alias. Please try again.";
         };
+    }
+
+    /**
+     * Formats every built-in shortcut and custom alias.
+     *
+     * @param customAliases Custom aliases in creation order.
+     * @return Formatted shortcut list.
+     */
+    private static String aliasListMessage(Map<String, CommandType> customAliases) {
+        StringBuilder message = new StringBuilder("Here are the shortcuts I know:\n\nBuilt-in:");
+        for (CommandType commandType : CommandType.values()) {
+            for (String shortcut : commandType.getAliases()) {
+                message.append("\n  ").append(shortcut).append(" -> ").append(commandType.getWord());
+            }
+        }
+        if (customAliases.isEmpty()) {
+            return message.append("\n\nNo custom aliases yet. Add one with: alias <name> <command>").toString();
+        }
+        message.append("\n\nYour aliases:");
+        for (Map.Entry<String, CommandType> alias : customAliases.entrySet()) {
+            message.append("\n  ").append(alias.getKey()).append(" -> ").append(alias.getValue().getWord());
+        }
+        return message.toString();
     }
 
     /** Starts Yawned using its standard relative storage path. */
