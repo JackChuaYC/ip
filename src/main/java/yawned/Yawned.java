@@ -20,6 +20,8 @@ import yawned.ui.Ui;
  * Coordinates the UI, command parser, task list, and storage for Yawned.
  */
 public class Yawned {
+    private static final String WELCOME_MESSAGE = "*yawn* Yawned is awake enough to help.\nWhat can I do for you?\n";
+
     private final Ui ui;
     private final Parser parser;
     private final AliasManager aliasManager;
@@ -55,7 +57,6 @@ public class Yawned {
             case FIND -> findTaskMessage(input);
             case ALIAS -> aliasMessage(input);
             case TODO, DEADLINE, EVENT, UNKNOWN -> addTaskMessage(commandType, input);
-            case BYE -> "That's all for now. I'm heading back to sleep.";
         };
     }
 
@@ -72,14 +73,16 @@ public class Yawned {
     /** Starts the interactive chatbot session. */
     public void run() {
         ui.showWelcome();
-        String userInput = ui.readCommand("*yawn* Yawned is awake enough to help.\nWhat can I do for you?\n");
-        ui.showBreakLine();
-        while (getCommandType(userInput) != CommandType.BYE) {
-            userInput = ui.readCommand(getResponse(userInput));
+        String response = WELCOME_MESSAGE;
+        while (true) {
+            ui.showMessage(response);
+            ui.showBreakLine();
+            if (!ui.hasNextCommand()) {
+                return;
+            }
+            response = getResponse(ui.readCommand());
             ui.showBreakLine();
         }
-        ui.showMessage("That's all for now. I'm heading back to sleep.");
-        ui.showBreakLine();
     }
 
     /**

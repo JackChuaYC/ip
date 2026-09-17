@@ -23,7 +23,6 @@ mark 1
 list
 delete 1
 list
-bye
 ```
 
 **Expected output:**
@@ -72,11 +71,6 @@ ____________________________________________________________
 Nothing on the list. A rare moment of peace.
 ____________________________________________________________
 
-____________________________________________________________
-
-That's all for now. I'm heading back to sleep.
-____________________________________________________________
-
 ```
 
 ## Test case: Explain invalid commands
@@ -93,7 +87,6 @@ deadline submit report
 event meeting /from 2026-01-01 0900
 mark
 dance
-bye
 ```
 
 **Expected output:**
@@ -133,12 +126,7 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, find, alias, or bye.
-____________________________________________________________
-
-____________________________________________________________
-
-That's all for now. I'm heading back to sleep.
+*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, find, or alias.
 ____________________________________________________________
 
 ```
@@ -157,7 +145,6 @@ HW finish assignment
 f assignment
 alias remove hw
 hw another task
-bye
 ```
 
 **Expected output:**
@@ -200,12 +187,7 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, find, alias, or bye.
-____________________________________________________________
-
-____________________________________________________________
-
-That's all for now. I'm heading back to sleep.
+*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, find, or alias.
 ____________________________________________________________
 
 ```

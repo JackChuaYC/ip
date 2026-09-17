@@ -52,7 +52,7 @@ class YawnedTest {
                 reloadedYawned.getResponse("HW submit report /by 2026-01-01 0900"));
         assertEquals("All set. Alias 'hw' has been removed.", reloadedYawned.getResponse("alias remove Hw"));
         assertEquals("*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, "
-                        + "find, alias, or bye.",
+                        + "find, or alias.",
                 reloadedYawned.getResponse("hw finish assignment"));
     }
 
@@ -68,7 +68,7 @@ class YawnedTest {
         assertEquals("That alias name is already reserved, even I can't nap through that rule.",
                 yawned.getResponse("alias alias todo"));
         assertEquals("Aliases can only run a standard task command.", yawned.getResponse("alias hw t"));
-        assertEquals("Aliases can only run a standard task command.", yawned.getResponse("alias hw bye"));
+        assertEquals("Aliases can only run a standard task command.", yawned.getResponse("alias hw sleep"));
         assertEquals("I couldn't find an alias named 'hw'.", yawned.getResponse("alias remove hw"));
     }
 
@@ -78,6 +78,6 @@ class YawnedTest {
 
         assertEquals("Which task should I mark? For example: mark 2", yawned.getResponse("mark"));
         assertEquals("*yawn* I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, "
-                        + "find, alias, or bye.", yawned.getResponse("dance"));
+                        + "find, or alias.", yawned.getResponse("dance"));
     }
 }
