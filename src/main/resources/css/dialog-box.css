@@ -14,7 +14,8 @@
 }
 
 #displayPicture {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 8, 0.25, 2, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.2, 1, 2);
+    -fx-opacity: 0.95;
 }
 
 .user-dialog {
