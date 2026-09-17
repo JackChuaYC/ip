@@ -42,7 +42,8 @@ class YawnedTest {
         Yawned yawned = new Yawned(saveFile);
 
         assertEquals("All set. Alias 'hw' now runs 'todo'.", yawned.getResponse("alias HW todo"));
-        assertEquals("Noted. I've tucked this into your task list:\n  [T][ ] finish assignment\nYou now have 1 task(s).",
+        assertEquals("Noted. I've tucked this into your task list:\n  [T][ ] finish assignment"
+                        + "\nYou now have 1 task(s).",
                 yawned.getResponse("hW finish assignment"));
         assertEquals("All set. Alias 'hw' now runs 'deadline'.", yawned.getResponse("alias hw deadline"));
 

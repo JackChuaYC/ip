@@ -44,8 +44,8 @@ public class Parser {
             case TODO -> createToDo(details);
             case DEADLINE -> createDeadline(details);
             case EVENT -> createEvent(details);
-            case UNKNOWN -> throw new YawnedException("*yawn* I don't recognize that command. Try todo, deadline, event, "
-                    + "list, mark, unmark, delete, find, or alias.");
+            case UNKNOWN -> throw new YawnedException("*yawn* I don't recognize that command. "
+                    + "Try todo, deadline, event, list, mark, unmark, delete, find, or alias.");
             default -> throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
         };
     }
