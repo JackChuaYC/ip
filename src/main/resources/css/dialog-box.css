@@ -5,12 +5,12 @@
     -fx-border-radius: 14 14 14 2;
     -fx-border-width: 1px;
     -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
     -fx-text-fill: #EEF0F6;
 }
 
 .reply-label {
-    -fx-font-size: 14px;
+    -fx-line-spacing: 1px;
 }
 
 #displayPicture {
