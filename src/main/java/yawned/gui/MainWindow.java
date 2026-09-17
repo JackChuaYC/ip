@@ -1,7 +1,6 @@
 package yawned.gui;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,9 +21,6 @@ public class MainWindow extends AnchorPane {
 
     @FXML
     private TextField userInput;
-
-    @FXML
-    private Button sendButton;
 
     private final Image yawnedImage = new Image(getClass().getResourceAsStream("/images/YawnedMascot.png"));
     private Yawned yawned;

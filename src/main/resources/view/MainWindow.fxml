@@ -11,7 +11,7 @@
     <children>
         <Label styleClass="app-title" text="Yawned — reluctantly organized" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="11.0" />
         <TextField fx:id="userInput" layoutY="548.0" onAction="#handleUserInput" prefHeight="44.0" prefWidth="308.0" promptText="What needs doing?" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="84.0" />
-        <Button fx:id="sendButton" layoutX="316.0" layoutY="548.0" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="44.0" prefWidth="76.0" text="Send ☾" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="8.0" />
+        <Button layoutX="316.0" layoutY="548.0" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="44.0" prefWidth="76.0" text="Send ☾" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="8.0" />
         <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" hvalue="1.0" prefHeight="548.0" prefWidth="392.0" vvalue="1.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="42.0">
             <content>
                 <VBox fx:id="dialogContainer" prefWidth="384.0" spacing="2.0" />
