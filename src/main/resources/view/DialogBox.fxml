@@ -7,7 +7,7 @@
 
 <fx:root alignment="TOP_RIGHT" stylesheets="@../css/dialog-box.css" type="HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label fx:id="dialog" maxWidth="300.0" prefWidth="300.0" wrapText="true">
+        <Label fx:id="dialog" prefWidth="300.0" wrapText="true">
          <HBox.margin>
             <Insets bottom="4.0" left="12.0" right="12.0" top="4.0" />
          </HBox.margin>

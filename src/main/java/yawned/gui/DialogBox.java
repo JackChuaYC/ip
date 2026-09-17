@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import yawned.parser.CommandType;
 
 /**
@@ -48,6 +49,8 @@ public class DialogBox extends HBox {
         Collections.reverse(children);
         getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
+        HBox.setHgrow(dialog, Priority.ALWAYS);
+        dialog.setMaxWidth(Double.MAX_VALUE);
         dialog.getStyleClass().add("reply-label");
     }
 
