@@ -44,3 +44,12 @@
     -fx-background-color: #62444D;
     -fx-border-color: #C97878;
 }
+
+.error-label {
+    -fx-background-color: #593642;
+    -fx-border-color: #E3919E;
+    -fx-border-width: 1px 1px 1px 4px;
+    -fx-effect: dropshadow(gaussian, rgba(227, 145, 158, 0.18), 10, 0.2, 0, 1);
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFF7F8;
+}

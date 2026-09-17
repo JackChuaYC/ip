@@ -80,6 +80,9 @@ public class DialogBox extends HBox {
             case DELETE:
                 dialog.getStyleClass().add("delete-label");
                 break;
+            case UNKNOWN:
+                dialog.getStyleClass().add("error-label");
+                break;
             default:
                 break;
         }
