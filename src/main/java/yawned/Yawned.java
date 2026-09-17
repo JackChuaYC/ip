@@ -33,7 +33,7 @@ public class Yawned {
     /**
      * Creates the chatbot and loads its saved tasks.
      *
-     * @param saveFile Relative path of the task storage file.
+     * @param saveFile Path of the task storage file.
      */
     public Yawned(Path saveFile) {
         ui = new Ui(new Scanner(System.in));
@@ -326,8 +326,8 @@ public class Yawned {
         return message.toString();
     }
 
-    /** Starts Yawned using its standard relative storage path. */
+    /** Starts Yawned using its standard storage path. */
     public static void main(String[] args) {
-        new Yawned(Path.of("data", "Yawned.txt")).run();
+        new Yawned(ApplicationPaths.taskFile()).run();
     }
 }

@@ -15,7 +15,7 @@ Use the graphical app throughout, close its window when you are done.
 - Use the commands exactly as written; task descriptions may contain spaces.
 - `INDEX` means the task number shown by `list`, starting at 1.
 - Dates and times use `yyyy-MM-dd HHmm`, for example `2026-04-10 1430`.
-- Your tasks and custom aliases are saved automatically in the `data` folder.
+- Your tasks and custom aliases are saved automatically in the `data` folder beside `yawned.jar`.
 
 ## Manage tasks
 

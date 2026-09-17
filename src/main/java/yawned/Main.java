@@ -1,7 +1,6 @@
 package yawned;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +16,7 @@ public class Main extends Application {
     private static final double MINIMUM_WINDOW_HEIGHT = 220;
     private static final double MINIMUM_WINDOW_WIDTH = 417;
 
-    private final Yawned yawned = new Yawned(Path.of("data", "Yawned.txt"));
+    private final Yawned yawned = new Yawned(ApplicationPaths.taskFile());
 
     @Override
     public void start(Stage stage) {
