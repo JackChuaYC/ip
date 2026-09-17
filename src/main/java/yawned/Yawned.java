@@ -55,7 +55,7 @@ public class Yawned {
             case FIND -> findTaskMessage(input);
             case ALIAS -> aliasMessage(input);
             case TODO, DEADLINE, EVENT, UNKNOWN -> addTaskMessage(commandType, input);
-            case BYE -> "Bye.. I am going back to sleep.";
+            case BYE -> "That's all for now. I'm heading back to sleep.";
         };
     }
 
@@ -72,13 +72,13 @@ public class Yawned {
     /** Starts the interactive chatbot session. */
     public void run() {
         ui.showWelcome();
-        String userInput = ui.readCommand("*Yawns..* You woke me up...\nWhat do you want?\n");
+        String userInput = ui.readCommand("*yawn* Yawned is awake enough to help.\nWhat can I do for you?\n");
         ui.showBreakLine();
         while (getCommandType(userInput) != CommandType.BYE) {
             userInput = ui.readCommand(getResponse(userInput));
             ui.showBreakLine();
         }
-        ui.showMessage("Bye.. I am going back to sleep.");
+        ui.showMessage("That's all for now. I'm heading back to sleep.");
         ui.showBreakLine();
     }
 
@@ -129,8 +129,8 @@ public class Yawned {
      * @return Confirmation message.
      */
     private static String addedTaskMessage(Task task, int taskCounter) {
-        return "Got it. I've added this task:\n  " + task
-                + "\nNow you have " + taskCounter + " tasks in the list.";
+        return "Noted. I've tucked this into your task list:\n  " + task
+                + "\nYou now have " + taskCounter + " task(s).";
     }
 
     /**
@@ -141,8 +141,8 @@ public class Yawned {
      * @return Confirmation message.
      */
     private static String deletedTaskMessage(Task task, int taskCounter) {
-        return "fine. I removed this task:\n  " + task
-                + "\nNow you have " + taskCounter + " tasks in the list.";
+        return "One less thing to carry around. Removed:\n  " + task
+                + "\n" + taskCounter + " task(s) remain.";
     }
 
     /**
@@ -152,9 +152,9 @@ public class Yawned {
      */
     private String taskListMessage() {
         if (tasks.isEmpty()) {
-            return "No Tasks!";
+            return "Nothing on the list. A rare moment of peace.";
         }
-        return taskListMessage("Here you go, the tasks in your list:", tasks.getTasks());
+        return taskListMessage("Here's what's keeping you busy:", tasks.getTasks());
     }
 
     /**
@@ -185,7 +185,7 @@ public class Yawned {
         try {
             int taskNumber = parser.parseTaskNumber(CommandType.DELETE, command);
             if (!isValidTaskNumber(taskNumber)) {
-                return "you... don't have that task number???";
+                return "I can't find a task with that number. Try one from the list.";
             }
             Task deletedTask = deleteTask(taskNumber);
             return deletedTaskMessage(deletedTask, tasks.size());
@@ -204,11 +204,11 @@ public class Yawned {
         try {
             int taskNumber = parser.parseTaskNumber(CommandType.MARK, command);
             if (!isValidTaskNumber(taskNumber)) {
-                return "you... don't have that task number???";
+                return "I can't find a task with that number. Try one from the list.";
             }
             Task task = tasks.markTask(taskNumber);
             storage.saveTasks(tasks.getTasks());
-            return "finally, that's done:\n  " + task;
+            return "Done at last. I've marked this complete:\n  " + task;
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
@@ -224,11 +224,11 @@ public class Yawned {
         try {
             int taskNumber = parser.parseTaskNumber(CommandType.UNMARK, command);
             if (!isValidTaskNumber(taskNumber)) {
-                return "you... don't have that task number???";
+                return "I can't find a task with that number. Try one from the list.";
             }
             Task task = tasks.unmarkTask(taskNumber);
             storage.saveTasks(tasks.getTasks());
-            return "As productive as me... unmarked:\n  " + task;
+            return "Back on the radar. I've marked this incomplete:\n  " + task;
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
@@ -254,9 +254,9 @@ public class Yawned {
         try {
             List<Task> matchingTasks = tasks.findTasks(parser.parseFindKeyword(command));
             if (matchingTasks.isEmpty()) {
-                return "No matching tasks!";
+                return "I couldn't find anything matching that. It may be hiding under a blanket.";
             }
-            return taskListMessage("Here are the matching tasks in your list:", matchingTasks);
+            return taskListMessage("I found these before my attention drifted:", matchingTasks);
         } catch (YawnedException exception) {
             return exception.getMessage();
         }
@@ -285,13 +285,13 @@ public class Yawned {
     private static String aliasResultMessage(AliasCommand aliasCommand, String aliasName, AliasResult result) {
         return switch (result) {
             case SUCCESS -> aliasCommand.removal()
-                    ? "Alias '" + aliasName + "' has been removed."
-                    : "Alias '" + aliasName + "' now runs '" + aliasCommand.targetCommand() + "'.";
-            case INVALID_NAME -> "Alias names must contain letters only.";
-            case RESERVED_NAME -> "That alias name is reserved.";
-            case INVALID_TARGET -> "Aliases must target a canonical task command.";
-            case NOT_FOUND -> "No alias named '" + aliasName + "'.";
-            case SAVE_FAILED -> "OOPS!!! I couldn't save aliases.";
+                    ? "All set. Alias '" + aliasName + "' has been removed."
+                    : "All set. Alias '" + aliasName + "' now runs '" + aliasCommand.targetCommand() + "'.";
+            case INVALID_NAME -> "I need an alias name made of letters only.";
+            case RESERVED_NAME -> "That alias name is already reserved, even I can't nap through that rule.";
+            case INVALID_TARGET -> "Aliases can only run a standard task command.";
+            case NOT_FOUND -> "I couldn't find an alias named '" + aliasName + "'.";
+            case SAVE_FAILED -> "I couldn't save that alias. Please try again.";
         };
     }
 

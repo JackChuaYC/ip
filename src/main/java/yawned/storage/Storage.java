@@ -54,7 +54,7 @@ public class Storage {
                 Files.move(temporaryFile, saveFile, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException exception) {
-            System.out.println("OOPS!!! I couldn't save the task list.");
+            System.out.println("I couldn't save that change. Your current session is still active; please try again.");
         } finally {
             deleteTemporaryFile(temporaryFile);
         }
@@ -78,12 +78,12 @@ public class Storage {
                     try {
                         tasks.add(createTaskFromStorage(storedTask));
                     } catch (IllegalArgumentException | DateTimeException exception) {
-                        System.out.println("OOPS!!! I skipped invalid saved task on line " + (i + 1) + ".");
+                        System.out.println("I skipped an unreadable saved task on line " + (i + 1) + ".");
                     }
                 }
             }
         } catch (IOException exception) {
-            System.out.println("OOPS!!! I couldn't read the saved task list. Starting with an empty list.");
+            System.out.println("I couldn't read the saved tasks, so I'm starting with an empty list.");
         }
         return tasks;
     }

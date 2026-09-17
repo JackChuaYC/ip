@@ -54,22 +54,24 @@ class ParserTest {
     @Test
     void parseTask_incompleteOrInvalidTaskCommands_throwsHelpfulException() {
         assertYawnedException(CommandType.TODO, "todo",
-                "hey!!! The description of a todo cannot be empty. *yawns*");
+                "I need a task description before I can save it. For example: todo buy milk");
         assertYawnedException(CommandType.DEADLINE, "deadline /by 2026-01-01 0900",
-                "I just want to sleep... you forgot to provide a description for the deadline. "
+                "I need a deadline description before I can save it. "
                         + "Use: deadline <description> /by yyyy-MM-dd HHmm");
         assertYawnedException(CommandType.DEADLINE, "deadline submit report",
-                "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
+                "I need a /by date and time in yyyy-MM-dd HHmm format. "
+                        + "Example: deadline submit report /by 2026-01-01 0900");
         assertYawnedException(CommandType.DEADLINE, "deadline submit report /by 2026-02-30 0900",
-                "Please use a valid date and time in yyyy-MM-dd HHmm format.");
+                "I need a valid date and time in yyyy-MM-dd HHmm format. *yawn*");
         assertYawnedException(CommandType.EVENT, "event /from 2026-01-01 0900 /to 2026-01-01 1000",
-                "I just want to sleep... you forgot to provide a description for the event. "
+                "I need an event description before I can save it. "
                         + "Use: event <description> /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm");
         assertYawnedException(CommandType.EVENT, "event meeting /from 2026-01-01 0900",
-                "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
+                "I need /from and /to times in yyyy-MM-dd HHmm format. "
+                        + "Example: event meeting /from 2026-01-01 0900 /to 2026-01-01 1000");
         assertYawnedException(CommandType.EVENT,
                 "event meeting /from 2026-01-01 0900 /to 2026-01-01 2400",
-                "Please use a valid date and time in yyyy-MM-dd HHmm format.");
+                "I need a valid date and time in yyyy-MM-dd HHmm format. *yawn*");
     }
 
     @Test
@@ -86,11 +88,11 @@ class ParserTest {
     @Test
     void parseTaskNumber_missingOrMalformedNumber_throwsCommandSpecificException() {
         assertTaskNumberException(CommandType.MARK, "mark",
-                "*Yawns* You need to tell me which number to mark.. like: mark 2");
+                "Which task should I mark? For example: mark 2");
         assertTaskNumberException(CommandType.UNMARK, "unmark nope",
-                "*Yawns* You need to tell me which number to unmark.. like: unmark 2");
+                "Which task should I unmark? For example: unmark 2");
         assertTaskNumberException(CommandType.DELETE, "delete 1.5",
-                "*Yawns* You need to tell me which number to delete.. like: delete 2");
+                "Which task should I delete? For example: delete 2");
     }
 
     @Test
@@ -104,7 +106,7 @@ class ParserTest {
         YawnedException exception = assertThrows(YawnedException.class, () ->
                 parser.parseFindKeyword("find"));
 
-        assertEquals("*Yawns* You need to tell me what to find.. like: find book", exception.getMessage());
+        assertEquals("I need something to search for. For example: find book", exception.getMessage());
     }
 
     @Test
@@ -142,6 +144,7 @@ class ParserTest {
 
     private void assertAliasException(String command) {
         YawnedException exception = assertThrows(YawnedException.class, () -> parser.parseAliasCommand(command));
-        assertEquals("Use: alias <name> <command> or alias remove <name>.", exception.getMessage());
+        assertEquals("I need an alias name and command. Use: alias <name> <command> or alias remove <name>.",
+                exception.getMessage());
     }
 }

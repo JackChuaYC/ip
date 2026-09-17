@@ -9,7 +9,7 @@ public class Ui {
     private static final String BANNER = """
             ========================
                      YAWNED
-               Your sleepy chatbot
+             Reluctantly organized
             ========================
             """;
 

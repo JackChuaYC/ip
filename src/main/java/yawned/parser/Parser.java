@@ -44,7 +44,8 @@ public class Parser {
             case TODO -> createToDo(details);
             case DEADLINE -> createDeadline(details);
             case EVENT -> createEvent(details);
-            case UNKNOWN -> throw new YawnedException("urmmm, but I don't know what that means?? >:-(");
+            case UNKNOWN -> throw new YawnedException("*yawn* I don't recognize that command. Try todo, deadline, event, "
+                    + "list, mark, unmark, delete, find, alias, or bye.");
             default -> throw new IllegalArgumentException("Cannot create a task from command type: " + commandType);
         };
     }
@@ -76,7 +77,7 @@ public class Parser {
     public String parseFindKeyword(String command) throws YawnedException {
         String keyword = getCommandArguments(command);
         if (keyword.isEmpty()) {
-            throw new YawnedException("*Yawns* You need to tell me what to find.. like: find book");
+            throw new YawnedException("I need something to search for. For example: find book");
         }
         return keyword;
     }
@@ -92,7 +93,7 @@ public class Parser {
         String details = getCommandArguments(command);
         String[] arguments = details.split(" +");
         if (arguments.length != 2) {
-            throw new YawnedException("Use: alias <name> <command> or alias remove <name>.");
+            throw new YawnedException("I need an alias name and command. Use: alias <name> <command> or alias remove <name>.");
         }
         if (arguments[0].equals("remove")) {
             return new AliasCommand(arguments[1], "", true);
@@ -112,9 +113,9 @@ public class Parser {
     /** Returns the appropriate task-number validation message for a command. */
     private static String missingTaskNumberMessage(CommandType commandType) {
         return switch (commandType) {
-            case DELETE -> "*Yawns* You need to tell me which number to delete.. like: delete 2";
-            case MARK -> "*Yawns* You need to tell me which number to mark.. like: mark 2";
-            case UNMARK -> "*Yawns* You need to tell me which number to unmark.. like: unmark 2";
+            case DELETE -> "Which task should I delete? For example: delete 2";
+            case MARK -> "Which task should I mark? For example: mark 2";
+            case UNMARK -> "Which task should I unmark? For example: unmark 2";
             default -> throw new IllegalArgumentException("Cannot select a task from command type: " + commandType);
         };
     }
@@ -122,7 +123,7 @@ public class Parser {
     /** Creates a to-do from its command details. */
     private static ToDo createToDo(String details) throws YawnedException {
         if (details.isEmpty()) {
-            throw new YawnedException("hey!!! The description of a todo cannot be empty. *yawns*");
+            throw new YawnedException("I need a task description before I can save it. For example: todo buy milk");
         }
         return new ToDo(details);
     }
@@ -131,19 +132,18 @@ public class Parser {
     private static Deadline createDeadline(String details) throws YawnedException {
         int byIndex = details.indexOf(" /by");
         if (details.isEmpty() || details.startsWith("/by")) {
-            throw new YawnedException(
-                    "I just want to sleep... you forgot to provide a description for the deadline. "
-                            + "Use: deadline <description> /by yyyy-MM-dd HHmm");
+            throw new YawnedException("I need a deadline description before I can save it. "
+                    + "Use: deadline <description> /by yyyy-MM-dd HHmm");
         }
         if (byIndex < 0) {
-            throw new YawnedException(
-                    "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
+            throw new YawnedException("I need a /by date and time in yyyy-MM-dd HHmm format. "
+                    + "Example: deadline submit report /by 2026-01-01 0900");
         }
         assert byIndex > 0 : "A validated deadline must contain a description before /by.";
         String endDate = details.substring(byIndex + " /by".length()).trim();
         if (endDate.isEmpty()) {
-            throw new YawnedException(
-                    "you woke me up for this? A deadline must include a /by time in yyyy-MM-dd HHmm format.");
+            throw new YawnedException("I need a /by date and time in yyyy-MM-dd HHmm format. "
+                    + "Example: deadline submit report /by 2026-01-01 0900");
         }
         String description = details.substring(0, byIndex).trim();
         assert !description.isEmpty() : "A validated deadline must have a description.";
@@ -154,26 +154,25 @@ public class Parser {
     private static Event createEvent(String details) throws YawnedException {
         int fromIndex = details.indexOf(" /from");
         if (details.isEmpty() || details.startsWith("/from") || details.startsWith("/to")) {
-            throw new YawnedException(
-                    "I just want to sleep... you forgot to provide a description for the event. "
-                            + "Use: event <description> /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm");
+            throw new YawnedException("I need an event description before I can save it. "
+                    + "Use: event <description> /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm");
         }
         if (fromIndex < 0) {
-            throw new YawnedException(
-                    "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
+            throw new YawnedException("I need /from and /to times in yyyy-MM-dd HHmm format. "
+                    + "Example: event meeting /from 2026-01-01 0900 /to 2026-01-01 1000");
         }
         assert fromIndex > 0 : "A validated event must contain a description before /from.";
         int toIndex = details.indexOf(" /to", fromIndex + " /from".length());
         if (toIndex < 0) {
-            throw new YawnedException(
-                    "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
+            throw new YawnedException("I need /from and /to times in yyyy-MM-dd HHmm format. "
+                    + "Example: event meeting /from 2026-01-01 0900 /to 2026-01-01 1000");
         }
         assert toIndex > fromIndex : "The /to marker must follow the /from marker.";
         String fromDate = details.substring(fromIndex + " /from".length(), toIndex).trim();
         String toDate = details.substring(toIndex + " /to".length()).trim();
         if (fromDate.isEmpty() || toDate.isEmpty()) {
-            throw new YawnedException(
-                    "Excuse me, An event must include /from and /to times in yyyy-MM-dd HHmm format.");
+            throw new YawnedException("I need /from and /to times in yyyy-MM-dd HHmm format. "
+                    + "Example: event meeting /from 2026-01-01 0900 /to 2026-01-01 1000");
         }
         String description = details.substring(0, fromIndex).trim();
         assert !description.isEmpty() : "A validated event must have a description.";
@@ -191,7 +190,7 @@ public class Parser {
         try {
             return LocalDateTime.parse(dateTimeText, INPUT_DATE_TIME_FORMAT);
         } catch (DateTimeParseException exception) {
-            throw new YawnedException("Please use a valid date and time in yyyy-MM-dd HHmm format.");
+            throw new YawnedException("I need a valid date and time in yyyy-MM-dd HHmm format. *yawn*");
         }
     }
 }
