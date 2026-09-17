@@ -21,7 +21,6 @@ class CommandTypeTest {
                 Map.entry(CommandType.DELETE, "delete"),
                 Map.entry(CommandType.FIND, "find"),
                 Map.entry(CommandType.ALIAS, "alias"),
-                Map.entry(CommandType.BYE, "bye"),
                 Map.entry(CommandType.UNKNOWN, ""));
 
         commandWords.forEach((commandType, expectedWord) ->
@@ -39,8 +38,7 @@ class CommandTypeTest {
                 "unmark", CommandType.UNMARK,
                 "delete", CommandType.DELETE,
                 "find", CommandType.FIND,
-                "alias", CommandType.ALIAS,
-                "bye", CommandType.BYE);
+                "alias", CommandType.ALIAS);
 
         commands.forEach((input, expectedType) ->
                 assertEquals(expectedType, CommandType.fromInput(input)));
@@ -80,7 +78,6 @@ class CommandTypeTest {
     @Test
     void fromInput_noArgumentCommandWithExtraText_returnsUnknown() {
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("list all"));
-        assertEquals(CommandType.UNKNOWN, CommandType.fromInput("bye now"));
     }
 
     @Test
@@ -94,5 +91,6 @@ class CommandTypeTest {
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("deluxe 1"));
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("l all"));
         assertEquals(CommandType.UNKNOWN, CommandType.fromInput("b"));
+        assertEquals(CommandType.UNKNOWN, CommandType.fromInput("bye"));
     }
 }

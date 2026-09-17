@@ -13,7 +13,6 @@ public enum CommandType {
     DELETE("delete", true, "del"),
     FIND("find", true, "f"),
     ALIAS("alias", true),
-    BYE("bye", false),
     UNKNOWN("", false);
 
     private final String word;

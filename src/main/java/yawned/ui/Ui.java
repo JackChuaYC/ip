@@ -33,14 +33,20 @@ public class Ui {
     }
 
     /**
-     * Shows a message and reads the next command from the user.
+     * Returns whether another command is available from the input source.
      *
-     * @param message Message to display before accepting input.
+     * @return Whether another command can be read.
+     */
+    public boolean hasNextCommand() {
+        return scanner.hasNextLine();
+    }
+
+    /**
+     * Reads the next command from the user.
+     *
      * @return The user's command.
      */
-    public String readCommand(String message) {
-        System.out.println(message);
-        showBreakLine();
+    public String readCommand() {
         return scanner.nextLine();
     }
 
