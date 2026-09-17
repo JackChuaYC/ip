@@ -83,7 +83,7 @@ public class Parser {
     }
 
     /**
-     * Parses an alias creation or removal command.
+     * Parses an alias listing, creation, or removal command.
      *
      * @param command Complete alias command.
      * @return Parsed alias command.
@@ -92,13 +92,21 @@ public class Parser {
     public AliasCommand parseAliasCommand(String command) throws YawnedException {
         String details = getCommandArguments(command);
         String[] arguments = details.split(" +");
+        if (arguments[0].equals("list")) {
+            if (arguments.length == 1) {
+                return new AliasCommand("", "", AliasAction.LIST);
+            }
+            throw new YawnedException("I need an alias command. Use: alias list, alias <name> <command>, "
+                    + "or alias remove <name>.");
+        }
         if (arguments.length != 2) {
-            throw new YawnedException("I need an alias name and command. Use: alias <name> <command> or alias remove <name>.");
+            throw new YawnedException("I need an alias command. Use: alias list, alias <name> <command>, "
+                    + "or alias remove <name>.");
         }
         if (arguments[0].equals("remove")) {
-            return new AliasCommand(arguments[1], "", true);
+            return new AliasCommand(arguments[1], "", AliasAction.REMOVE);
         }
-        return new AliasCommand(arguments[0], arguments[1], false);
+        return new AliasCommand(arguments[0], arguments[1], AliasAction.DEFINE);
     }
 
     /** Returns the text after the command word supplied by the user. */

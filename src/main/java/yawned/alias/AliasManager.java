@@ -1,5 +1,6 @@
 package yawned.alias;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -94,6 +95,15 @@ public class AliasManager {
         aliases.clear();
         aliases.putAll(updatedAliases);
         return AliasResult.SUCCESS;
+    }
+
+    /**
+     * Returns a read-only snapshot of the custom aliases in creation order.
+     *
+     * @return Custom alias mappings in creation order.
+     */
+    public Map<String, CommandType> getAliases() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(aliases));
     }
 
     /**

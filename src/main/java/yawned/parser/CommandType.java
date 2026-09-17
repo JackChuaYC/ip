@@ -1,5 +1,7 @@
 package yawned.parser;
 
+import java.util.List;
+
 /**
  * Represents a command word accepted by Yawned.
  */
@@ -41,6 +43,15 @@ public enum CommandType {
      */
     public boolean acceptsArguments() {
         return acceptsArguments;
+    }
+
+    /**
+     * Returns this command's built-in shortcuts.
+     *
+     * @return Built-in shortcuts in their display order.
+     */
+    public List<String> getAliases() {
+        return List.of(aliases);
     }
 
     /**

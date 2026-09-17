@@ -1,6 +1,13 @@
 # Yawned
 
-Yawned is a chatbot application.
+Yawned is a sleepy task-management chatbot application.
+
+## Commands
+
+Create custom shortcuts with `alias <name> <command>`, remove one with `alias remove <name>`, and view every
+built-in shortcut and custom alias with `alias list`.
+
+The console app ends when its input closes. The GUI closes normally through its window controls.
 
 ## Setting up in Intellij
 
@@ -17,7 +24,7 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
    ========================
             YAWNED
-      Your sleepy chatbot
+    Reluctantly organized
    ========================
    ```
 

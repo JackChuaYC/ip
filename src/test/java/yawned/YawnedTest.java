@@ -73,6 +73,22 @@ class YawnedTest {
     }
 
     @Test
+    void getResponse_aliasList_showsBuiltInsAndCustomAliasesInCreationOrder() {
+        Yawned yawned = new Yawned(temporaryDirectory.resolve("Yawned.txt"));
+
+        assertEquals("Here are the shortcuts I know:\n\nBuilt-in:\n  t -> todo\n  d -> deadline\n  e -> event"
+                        + "\n  l -> list\n  m -> mark\n  u -> unmark\n  del -> delete\n  f -> find"
+                        + "\n\nNo custom aliases yet. Add one with: alias <name> <command>",
+                yawned.getResponse("alias list"));
+        yawned.getResponse("alias hw todo");
+        yawned.getResponse("alias proj deadline");
+        assertEquals("Here are the shortcuts I know:\n\nBuilt-in:\n  t -> todo\n  d -> deadline\n  e -> event"
+                        + "\n  l -> list\n  m -> mark\n  u -> unmark\n  del -> delete\n  f -> find"
+                        + "\n\nYour aliases:\n  hw -> todo\n  proj -> deadline",
+                yawned.getResponse("alias list"));
+    }
+
+    @Test
     void getResponse_invalidOrUnknownCommand_returnsValidationMessage() {
         Yawned yawned = new Yawned(temporaryDirectory.resolve("Yawned.txt"));
 

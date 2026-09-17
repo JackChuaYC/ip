@@ -110,16 +110,18 @@ class ParserTest {
     }
 
     @Test
-    void parseAliasCommand_validCreationAndRemoval_returnsAliasDetails() throws YawnedException {
+    void parseAliasCommand_validActions_returnsAliasDetails() throws YawnedException {
+        AliasCommand listing = parser.parseAliasCommand("alias list");
         AliasCommand creation = parser.parseAliasCommand("alias hw todo");
         AliasCommand removal = parser.parseAliasCommand("alias remove hw");
 
+        assertEquals(AliasAction.LIST, listing.action());
         assertEquals("hw", creation.aliasName());
         assertEquals("todo", creation.targetCommand());
-        assertEquals(false, creation.removal());
+        assertEquals(AliasAction.DEFINE, creation.action());
         assertEquals("hw", removal.aliasName());
         assertEquals("", removal.targetCommand());
-        assertEquals(true, removal.removal());
+        assertEquals(AliasAction.REMOVE, removal.action());
     }
 
     @Test
@@ -127,6 +129,7 @@ class ParserTest {
         assertAliasException("alias");
         assertAliasException("alias hw");
         assertAliasException("alias remove");
+        assertAliasException("alias list extra");
         assertAliasException("alias hw todo extra");
     }
 
@@ -144,7 +147,7 @@ class ParserTest {
 
     private void assertAliasException(String command) {
         YawnedException exception = assertThrows(YawnedException.class, () -> parser.parseAliasCommand(command));
-        assertEquals("I need an alias name and command. Use: alias <name> <command> or alias remove <name>.",
+        assertEquals("I need an alias command. Use: alias list, alias <name> <command>, or alias remove <name>.",
                 exception.getMessage());
     }
 }
