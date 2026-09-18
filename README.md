@@ -1,5 +1,7 @@
 # Yawned User Guide
 
+![Screenshot of Yawned](./docs/Ui.png)
+
 **Yawned** is a sleepy but dependable task-management chatbot. Type commands in the app's input box and press Enter (or select **Send**); it saves changes automatically.
 
 ## Start here
