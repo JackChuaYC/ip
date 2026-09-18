@@ -19,6 +19,14 @@ Use the graphical app throughout, close its window when you are done.
 - Dates and times use `yyyy-MM-dd HHmm`, for example `2026-04-10 1430`.
 - Your tasks and custom aliases are saved automatically in the `data` folder.
 
+## Task types
+
+| Type | Use it for |
+| --- | --- |
+| To-do | Something to do with no associated date or time. |
+| Deadline | Something that must be finished by a particular date and time. |
+| Event | Something that takes place between a start and end date and time. |
+
 ## Manage tasks
 
 | What you want to do | Command | Example |
